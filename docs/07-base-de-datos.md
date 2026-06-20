@@ -1,6 +1,15 @@
 # 07 — Diseño de Base de Datos
 
-Aunque el MVP es una SPA frontend, se diseña la base de datos relacional para el **backend que consumirá la API REST**. Modelo normalizado y simple (sin sobreingeniería).
+Base de datos **relacional MySQL** consumida por el backend FastAPI. Modelo **normalizado hasta la Tercera Forma Normal (3FN)**, con integridad referencial y operaciones CRUD completas (requisitos de la rúbrica).
+
+## ¿Por qué MySQL (relacional)?
+
+- Los datos son **altamente estructurados y relacionados** (usuarios, roles, plantillas, preguntas, evaluaciones, respuestas) → encajan naturalmente en un modelo relacional con FKs.
+- Necesitamos **integridad referencial** (una respuesta siempre pertenece a una evaluación y a una pregunta) y **restricciones de unicidad** (no-duplicado por periodo).
+- El dashboard requiere **consultas agregadas** (promedios, conteos, agrupaciones) que SQL resuelve de forma natural.
+- Es ampliamente enseñada en la Ruta Básica → el equipo puede sustentarla con solvencia.
+
+Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacion-tecnologica.md).
 
 ## Entidades
 
@@ -138,5 +147,23 @@ evaluation_answers(id, evaluation_id→evaluations, question_id→questions, sco
 - **Plantillas dinámicas:** `form_templates` + `questions` permiten cambiar criterios sin tocar código (preparado para futuro CRUD de formularios, fuera del MVP).
 - **Una respuesta por pregunta** vía `evaluation_answers` (normalizado), facilitando métricas por criterio/categoría.
 - **Integridad de unicidad** (recomendada en backend): un evaluador no debería evaluar dos veces al mismo evaluado en el mismo periodo → índice único parcial sobre `(evaluator_id, evaluatee_id, period_id)` cuando no es anónima.
+
+## Cumplimiento de la Tercera Forma Normal (3FN)
+
+- **1FN:** todos los atributos son atómicos; no hay grupos repetidos (las respuestas se modelan en su propia tabla `evaluation_answers`, no como columnas múltiples).
+- **2FN:** sin dependencias parciales; cada tabla tiene PK simple (`id`) y los atributos dependen de ella por completo.
+- **3FN:** sin dependencias transitivas; p.ej. el nombre del rol vive en `roles` (no se repite en `users`), y los criterios viven en `questions` (no se duplican en cada respuesta).
+
+## Operaciones CRUD (cobertura MVP)
+
+| Entidad | Create | Read | Update | Delete |
+|---------|:------:|:----:|:------:|:------:|
+| users | seed/admin | login, listar evaluables | perfil (futuro) | baja lógica (`is_active`) |
+| evaluations | Coder (POST) | historial, dashboard | borrador→enviada | borrador descartable |
+| evaluation_answers | con la evaluación | en detalle/métricas | en borrador | cascada con evaluación |
+| form_templates / questions | seed | render de formularios | (admin, futuro) | (admin, futuro) |
+| periods | seed/admin | filtros | activar/cerrar | — |
+
+> La lógica de negocio (anonimato, no-duplicado, agregaciones) se implementa en la capa `services` del backend sobre estas operaciones; **no es CRUD plano**.
 
 El script ejecutable está en [`/database/schema.sql`](../database/schema.sql).

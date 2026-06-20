@@ -7,16 +7,26 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 
 ## ÉPICA CORE
 
-### CORE-01 — Setup SPA modular · `Must` · `5 SP`
+### CORE-01 — Setup repo + scaffold SPA · `Must` · `5 SP`
 **Como** developer **quiero** una base de proyecto SPA modular con router, store y cliente HTTP **para** construir las funcionalidades de forma ordenada y rápida.
 
 **Criterios de aceptación**
-- [ ] El proyecto arranca con `npm run dev` y muestra una vista inicial.
+- [ ] Monorepo con `frontend/` y `backend/` según [`06-arquitectura.md`](./06-arquitectura.md).
+- [ ] El frontend arranca con `npm run dev` y muestra una vista inicial.
 - [ ] Existe un router cliente que cambia de vista sin recargar la página.
-- [ ] La estructura de carpetas sigue [`06-arquitectura.md`](./06-arquitectura.md).
 - [ ] Hay un módulo `store` (estado) y un módulo `http` (fetch) reutilizables.
 
-### CORE-02 — Layout y navegación responsive · `Must` · `5 SP`
+### CORE-02 — Scaffold backend (FastAPI) + BD · `Must` · `5 SP`
+**Como** developer **quiero** un backend FastAPI por capas conectado a MySQL **para** exponer la API REST que consumirá la SPA.
+
+**Criterios de aceptación**
+- [ ] `uvicorn app.main:app --reload` levanta la API y expone `/docs` (Swagger).
+- [ ] Estructura por capas: `routers/`, `services/`, `repositories/`, `models/`, `schemas/`, `deps.py`.
+- [ ] Conexión a MySQL configurable por `.env`; la BD se crea con `database/schema.sql` (seed incluido).
+- [ ] Endpoint de salud (`GET /health`) responde `200`.
+- [ ] CORS habilitado para el origen del frontend.
+
+### CORE-03 — Layout y navegación responsive · `Must` · `5 SP`
 **Como** usuario **quiero** una interfaz con navegación clara y adaptable **para** usar la plataforma cómodamente desde móvil o escritorio.
 
 **Criterios de aceptación**
@@ -34,7 +44,8 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 
 **Criterios de aceptación**
 - [ ] Formulario con email y contraseña validados en cliente.
-- [ ] Mensaje de error claro ante credenciales inválidas.
+- [ ] `POST /auth/login` verifica la contraseña con **hash** (passlib/bcrypt) y emite un **JWT**.
+- [ ] Mensaje de error claro ante credenciales inválidas (`401`).
 - [ ] Al autenticar, se redirige a la vista inicial según el rol.
 - [ ] Botón deshabilitado y feedback de carga durante la petición.
 
@@ -43,6 +54,7 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 
 **Criterios de aceptación**
 - [ ] El token (JWT) se persiste en `localStorage` y se envía en cada petición.
+- [ ] El backend valida el token (`get_current_user`) y rechaza peticiones sin token o expirado (`401`).
 - [ ] Acceder a una ruta privada sin sesión redirige a login.
 - [ ] Existe acción de logout que limpia la sesión.
 - [ ] Si el token expira (401), se cierra sesión y se redirige a login.
@@ -53,7 +65,8 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 **Criterios de aceptación**
 - [ ] El Coder ve evaluaciones e historial propio; no ve el dashboard de coordinación.
 - [ ] El Coordinador ve dashboard, métricas e histórico.
-- [ ] Las rutas no autorizadas redirigen o muestran "no autorizado".
+- [ ] Las rutas no autorizadas redirigen o muestran "no autorizado" (front).
+- [ ] El backend aplica `require_role` y responde `403` ante accesos no autorizados (autoridad real).
 - [ ] La navegación se construye dinámicamente según los permisos del rol.
 
 ---
@@ -97,8 +110,9 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 **Como** Coder **quiero** que mi evaluación se guarde de forma confiable **para** que cuente en las métricas.
 
 **Criterios de aceptación**
-- [ ] La evaluación se persiste vía `POST` a la API REST.
+- [ ] La evaluación se persiste vía `POST /evaluations` con validación Pydantic en servidor.
 - [ ] Maneja estados: borrador y enviada.
+- [ ] **Regla de negocio:** rechaza (`409`) una segunda evaluación del mismo evaluado en el mismo periodo.
 - [ ] Manejo de errores de red con reintento y mensaje claro.
 - [ ] Tras enviar, la persona evaluada aparece como "ya evaluada".
 

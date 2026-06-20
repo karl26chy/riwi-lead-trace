@@ -1,23 +1,28 @@
-# Dependencias
+# ===== Frontend (Node / Vite) =====
 node_modules/
-
-# Build
 dist/
 .vite/
 
-# Mock API
-db.json
+# ===== Backend (Python / FastAPI) =====
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Entornos
+# ===== Entornos / secretos =====
 .env
 .env.local
 .env.*.local
 
-# Logs
+# ===== Logs =====
 *.log
 npm-debug.log*
 
-# Editor / SO
+# ===== Editor / SO =====
 .DS_Store
 .idea/
 .vscode/*

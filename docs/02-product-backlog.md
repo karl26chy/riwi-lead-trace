@@ -1,47 +1,53 @@
 # 02 — Product Backlog
 
-Backlog priorizado del MVP. Estimación en **Story Points (SP)** con escala Fibonacci (1, 2, 3, 5, 8). Prioridad **MoSCoW** (Must / Should / Could) ordenada por valor y dependencia.
+Backlog **full-stack** del MVP (frontend SPA + backend FastAPI + MySQL). Estimación en **Story Points (SP)**, escala Fibonacci (1, 2, 3, 5, 8). Prioridad **MoSCoW** (Must / Should / Could). Cada SP refleja el esfuerzo completo (UI + endpoint + datos), salvo las historias de andamiaje.
 
 | ID | Nombre | Descripción | Épica | Prioridad | SP | Dependencias |
 |----|--------|-------------|-------|-----------|:--:|--------------|
-| CORE-01 | Setup SPA modular | Inicializar proyecto, router cliente, estructura de carpetas, store y servicio HTTP base | CORE | Must | 5 | — |
-| CORE-02 | Layout y navegación responsive | Shell de la app: header/nav por rol, contenedor de vistas, estilos base mobile-first | CORE | Must | 5 | CORE-01 |
-| AUTH-01 | Inicio de sesión | Formulario de login con validación y feedback de error | AUTH | Must | 3 | CORE-02 |
-| AUTH-02 | Sesión y rutas protegidas | Persistir token (JWT) en `localStorage`, guard de rutas, logout, expiración | AUTH | Must | 5 | AUTH-01 |
-| AUTH-03 | Gestión de roles / autorización | Mostrar u ocultar vistas y acciones según rol del usuario | AUTH | Must | 3 | AUTH-02 |
-| EVAL-01 | Listar evaluables | Coder ve la lista de Team Leaders y Tutores que puede evaluar | EVAL | Must | 3 | AUTH-03 |
-| EVAL-02 | Evaluar Team Leader | Formulario estructurado (criterios + escala + comentarios) para Team Leader | EVAL | Must | 5 | EVAL-01 |
-| EVAL-03 | Evaluar Tutor | Formulario estructurado para Tutor (reutiliza el motor de formularios) | EVAL | Must | 3 | EVAL-02 |
-| EVAL-04 | Feedback anónimo opcional | Toggle que envía la evaluación sin asociar la identidad del evaluador | EVAL | Should | 2 | EVAL-02 |
-| EVAL-05 | Registrar evaluación (API) | Validar y persistir la evaluación contra la API REST; estado borrador/enviada | EVAL | Must | 5 | EVAL-02 |
-| HIST-01 | Historial del Coder | El Coder consulta las evaluaciones que ha enviado | HIST | Should | 3 | EVAL-05 |
-| HIST-02 | Seguimiento histórico | El Coordinador consulta el histórico de evaluaciones por líder/tutor y periodo | HIST | Should | 3 | EVAL-05 |
-| DASH-01 | Dashboard de resultados | Panel del Coordinador con resultados agregados por líder/tutor | DASH | Must | 5 | EVAL-05 |
-| DASH-02 | Métricas e indicadores | KPIs: promedio por criterio, nº de evaluaciones, % participación | DASH | Should | 5 | DASH-01 |
-| DASH-03 | Visualización de tendencias | Evolución temporal de calificaciones (gráfico de líneas/barras) | DASH | Should | 3 | DASH-02 |
-| DASH-04 | Reportes básicos (export) | Exportar resultados a CSV/impresión | DASH | Could | 3 | DASH-01 |
+| CORE-01 | Setup repo + scaffold SPA | Monorepo, estructura `frontend/`, router, store y `http.js` | CORE | Must | 5 | — |
+| CORE-02 | Scaffold backend + BD | FastAPI, capas (routers/services/repos/models), conexión MySQL, seed | CORE | Must | 5 | — |
+| CORE-03 | Layout y navegación responsive | Shell SPA, nav por rol, estilos base mobile-first | CORE | Must | 5 | CORE-01 |
+| AUTH-01 | Inicio de sesión | UI login + `POST /auth/login` con hash + emisión de JWT | AUTH | Must | 5 | CORE-02, CORE-03 |
+| AUTH-02 | Sesión y rutas protegidas | JWT en `localStorage`, guards SPA, `get_current_user`, expiración/logout | AUTH | Must | 5 | AUTH-01 |
+| AUTH-03 | Roles / autorización (RBAC) | Navegación/acciones por rol (front) + `require_role` (back) | AUTH | Must | 3 | AUTH-02 |
+| EVAL-01 | Listar evaluables | UI + `GET /users?role=` de Team Leaders/Tutores a evaluar | EVAL | Must | 3 | AUTH-03 |
+| EVAL-02 | Evaluar Team Leader | Formulario estructurado + `GET /forms?target_role=` plantilla | EVAL | Must | 5 | EVAL-01 |
+| EVAL-03 | Evaluar Tutor | Reutiliza motor de formularios con plantilla de Tutor | EVAL | Must | 3 | EVAL-02 |
+| EVAL-04 | Feedback anónimo opcional | Toggle + regla backend: no persistir `evaluator_id` | EVAL | Should | 3 | EVAL-02 |
+| EVAL-05 | Registrar evaluación (API) | `POST /evaluations`: validación Pydantic, estados, **no-duplicado por periodo** | EVAL | Must | 5 | EVAL-02 |
+| HIST-01 | Historial del Coder | UI + `GET /evaluations?evaluator_id=` de evaluaciones propias | HIST | Should | 3 | EVAL-05 |
+| HIST-02 | Seguimiento histórico | Coordinador: histórico por evaluado/periodo, respeta anonimato | HIST | Should | 5 | EVAL-05 |
+| DASH-01 | Dashboard de resultados | Panel coordinador + `GET /metrics/summary` (agregados) | DASH | Must | 5 | EVAL-05 |
+| DASH-02 | Métricas e indicadores | **Lógica de negocio:** promedio por criterio, % participación | DASH | Should | 5 | DASH-01 |
+| DASH-03 | Visualización de tendencias | Evolución temporal por criterio/persona | DASH | Should | 3 | DASH-02 |
+| DASH-04 | Reportes básicos (export) | Exportar a CSV / vista imprimible | DASH | Could | 3 | DASH-01 |
 
-**Total backlog MVP:** 61 SP.
+**Total backlog MVP:** 71 SP.
+
+## Lógica de negocio (no es solo CRUD)
+
+La rúbrica exige lógica de negocio identificable más allá del CRUD. En este backlog reside en:
+- **EVAL-05:** prevención de evaluación duplicada por (evaluador, evaluado, periodo) + manejo de estados borrador/enviada.
+- **EVAL-04:** anonimato real (no se persiste el evaluador).
+- **AUTH-03:** control de acceso basado en roles (RBAC) en servidor.
+- **DASH-02 / DASH-03:** cálculos agregados (promedios por criterio, participación, tendencias temporales).
 
 ## Orden de refinamiento
 
-1. **Habilitadores (CORE):** sin la SPA base no se construye nada.
-2. **AUTH:** todo el producto depende de identidad y rol.
-3. **EVAL:** núcleo de valor; es lo que valida la hipótesis del producto.
-4. **HIST + DASH:** convierten los datos en información accionable.
+1. **CORE** (andamiaje front + back + BD).
+2. **AUTH** (identidad y rol; todo depende de ello).
+3. **EVAL** (núcleo de valor; valida la hipótesis).
+4. **HIST + DASH** (convierten datos en información accionable).
 
 ## Definition of Ready (DoR)
-
-Una historia entra a un sprint cuando:
 - Tiene descripción, criterios de aceptación y SP.
-- Sus dependencias están resueltas o planificadas en el mismo sprint.
-- Su contrato de API (si aplica) está definido en [`06-arquitectura.md`](./06-arquitectura.md).
+- Dependencias resueltas o planificadas en el mismo sprint.
+- Contrato de API definido en [`06-arquitectura.md`](./06-arquitectura.md).
 
 ## Definition of Done (DoD)
-
-Una historia está terminada cuando:
 - Cumple **todos** sus criterios de aceptación.
-- Es responsive (móvil + escritorio) y accesible (navegación por teclado, labels).
-- El código sigue las convenciones de [`08-diseno-tecnico.md`](./08-diseno-tecnico.md).
-- Se probó manualmente contra la API mock; sin errores en consola.
-- Está mergeada a `develop` vía Pull Request.
+- **Backend:** validación con Pydantic, manejo de errores y códigos HTTP correctos; integrado con MySQL.
+- **Frontend:** responsive (móvil + escritorio) y accesible (teclado, labels); sin errores en consola.
+- Si aplica, incluye la **lógica de negocio** asociada (no degradada a CRUD).
+- Sigue las convenciones de [`08-diseno-tecnico.md`](./08-diseno-tecnico.md).
+- Probada manualmente (y con casos de prueba donde aplique); mergeada a `develop` vía Pull Request.

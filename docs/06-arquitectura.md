@@ -2,167 +2,190 @@
 
 ## Principios
 
-- **Simplicidad sobre todo:** sin frameworks; solo lo necesario para un MVP mantenible por una persona.
-- **Modularidad:** cada responsabilidad en su módulo (router, store, servicios, vistas, componentes).
-- **Separación de capas:** UI (vistas/componentes) ↔ estado (store) ↔ datos (servicios/API).
-- **Preparada para API REST:** toda la data pasa por la capa de `services`; cambiar de mock a backend real es transparente.
+- **Simplicidad y claridad:** lo necesario para un MVP full-stack mantenible por un equipo de 5.
+- **Separación de capas** en frontend y backend; responsabilidades únicas por módulo.
+- **Lógica de negocio explícita** (no solo CRUD): vive en la capa `services` del backend.
+- **Contrato REST estable** entre SPA y API → frontend y backend evolucionan en paralelo.
 
-## Arquitectura general
-
-SPA cliente con arquitectura modular en capas:
+## Arquitectura general (full-stack)
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                        Navegador                          │
-│                                                            │
-│   ┌──────────┐   ┌──────────────┐   ┌──────────────────┐  │
-│   │  Router   │──▶│    Vistas     │◀─▶│   Componentes    │  │
-│   │ (cliente) │   │  (páginas)    │   │  (reutilizables) │  │
-│   └────┬──────┘   └──────┬────────┘   └──────────────────┘ │
-│        │                 │                                  │
-│        ▼                 ▼                                  │
-│   ┌──────────────────────────────┐                         │
-│   │           Store               │  estado global (pub/sub)│
-│   │  (auth, ui, evaluaciones...)  │                         │
-│   └──────────────┬───────────────┘                         │
-│                  │                                          │
-│                  ▼                                          │
-│   ┌──────────────────────────────┐                         │
-│   │          Services             │  lógica de datos        │
-│   │  authService, evalService...  │                         │
-│   └──────────────┬───────────────┘                         │
-│                  │                                          │
-│                  ▼                                          │
-│   ┌──────────────────────────────┐                         │
-│   │       http (fetch wrapper)    │  baseURL, JWT, errores  │
-│   └──────────────┬───────────────┘                         │
-└──────────────────┼─────────────────────────────────────────┘
-                   │ HTTPS / REST
-                   ▼
-        ┌────────────────────────┐
-        │   API REST (backend)   │  json-server en dev
-        │  + Base de datos        │  (ver 07-base-de-datos)
-        └────────────────────────┘
+┌───────────────────────── Navegador ─────────────────────────┐
+│  SPA (frontend/)                                              │
+│  Router ─▶ Vistas ◀─▶ Componentes                            │
+│             │                                                 │
+│             ▼                                                 │
+│          Store (pub/sub: auth, ui)                           │
+│             │                                                 │
+│             ▼                                                 │
+│          Services ─▶ http.js (fetch: baseURL, JWT, errores) │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ HTTPS · REST (JSON) · JWT
+                            ▼
+┌──────────────────── Backend (backend/ · FastAPI) ───────────┐
+│  Routers (endpoints, validación I/O con Pydantic)            │
+│     │                                                        │
+│     ▼                                                        │
+│  Services  ◀── LÓGICA DE NEGOCIO (anonimato, no-duplicado,  │
+│     │           métricas agregadas, RBAC, estados)          │
+│     ▼                                                        │
+│  Repositories (consultas / acceso a datos)                  │
+│     │                                                        │
+│     ▼                                                        │
+│  Models (SQLAlchemy ORM)                                     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ SQLAlchemy + PyMySQL
+                            ▼
+                   ┌──────────────────┐
+                   │   MySQL (3FN)    │  (ver 07-base-de-datos)
+                   └──────────────────┘
 ```
 
-## Estructura de carpetas
+## Estructura de carpetas (monorepo)
 
 ```
 riwi-lead-trace/
-├── index.html                # punto de entrada SPA (un solo HTML)
-├── package.json
-├── vite.config.js
-├── db.json                   # datos mock (json-server, ignorado por git)
-├── public/                   # assets estáticos
-│   └── assets/
-├── src/
-│   ├── main.js               # bootstrap: monta router + store inicial
-│   ├── config/
-│   │   └── env.js            # baseURL de API, constantes globales
-│   ├── router/
-│   │   ├── router.js         # motor de rutas (History API) + guards
-│   │   └── routes.js         # tabla de rutas → vistas + roles permitidos
-│   ├── store/
-│   │   ├── store.js          # store pub/sub genérico
-│   │   ├── auth.store.js     # estado de sesión y usuario
-│   │   └── ui.store.js       # estado de UI (loading, toasts)
-│   ├── services/
-│   │   ├── http.js           # wrapper de fetch (baseURL, JWT, errores)
-│   │   ├── auth.service.js
-│   │   ├── evaluation.service.js
-│   │   ├── user.service.js
-│   │   └── metrics.service.js
-│   ├── views/                # una vista por ruta
-│   │   ├── login.view.js
-│   │   ├── home.view.js
-│   │   ├── evaluables.view.js
-│   │   ├── evaluation-form.view.js
-│   │   ├── history.view.js
-│   │   ├── dashboard.view.js
-│   │   └── not-found.view.js
-│   ├── components/           # piezas reutilizables de UI
-│   │   ├── navbar.js
-│   │   ├── form-field.js
-│   │   ├── rating-input.js
-│   │   ├── card.js
-│   │   ├── toast.js
-│   │   └── loader.js
-│   ├── utils/
-│   │   ├── dom.js            # helpers de creación/render DOM
-│   │   ├── validators.js
-│   │   └── format.js         # fechas, números
-│   └── styles/
-│       ├── main.css          # importa el resto
-│       ├── variables.css     # custom properties (colores, spacing)
-│       ├── base.css          # reset + tipografía
-│       ├── layout.css
-│       └── components.css
-├── docs/                     # documentación Scrum + técnica
-└── database/
-    └── schema.sql            # script SQL inicial (backend real)
+├── frontend/
+│   ├── index.html              # punto de entrada SPA (un solo HTML)
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── public/
+│   └── src/
+│       ├── main.js             # bootstrap: router + hidratar sesión
+│       ├── config/env.js       # API_BASE_URL, constantes
+│       ├── router/
+│       │   ├── router.js       # motor de rutas (History API) + guards
+│       │   └── routes.js       # rutas → vistas + roles permitidos
+│       ├── store/
+│       │   ├── store.js        # store pub/sub genérico
+│       │   ├── auth.store.js
+│       │   └── ui.store.js
+│       ├── services/
+│       │   ├── http.js         # wrapper fetch (baseURL, JWT, errores)
+│       │   ├── auth.service.js
+│       │   ├── evaluation.service.js
+│       │   ├── user.service.js
+│       │   └── metrics.service.js
+│       ├── views/              # login, home, evaluables, evaluation-form,
+│       │                       # history, dashboard, not-found (*.view.js)
+│       ├── components/         # navbar, form-field, rating-input, card,
+│       │                       # toast, loader
+│       ├── utils/              # dom.js, validators.js, format.js
+│       └── styles/             # variables, base, layout, components (.css)
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py             # crea FastAPI, CORS, incluye routers
+│   │   ├── core/
+│   │   │   ├── config.py       # settings (DB_URL, JWT_SECRET) desde .env
+│   │   │   ├── database.py     # engine + SessionLocal + Base
+│   │   │   └── security.py     # hash de contraseñas + crear/verificar JWT
+│   │   ├── models/             # SQLAlchemy: user, role, period,
+│   │   │                       # form_template, question, evaluation, answer
+│   │   ├── schemas/            # Pydantic: request/response por dominio
+│   │   ├── repositories/       # acceso a datos (queries reutilizables)
+│   │   ├── services/           # LÓGICA DE NEGOCIO por dominio
+│   │   ├── routers/            # auth, users, forms, evaluations, metrics
+│   │   └── deps.py             # get_db, get_current_user, require_role
+│   ├── tests/                  # pytest
+│   ├── requirements.txt
+│   └── .env.example
+│
+├── database/
+│   └── schema.sql              # DDL + seed (MySQL, 3FN)
+├── docs/                       # documentación Scrum + técnica (01..12)
+└── mockups/                    # exports/enlaces Figma
 ```
 
-## Sistema de rutas SPA
+## Sistema de rutas SPA (frontend)
 
-- Router propio basado en **History API** (`pushState` + evento `popstate`); fallback opcional a hash.
-- `routes.js` declara cada ruta con su vista y los roles autorizados:
+- Router propio sobre **History API** (`pushState` + `popstate`).
+- `routes.js` declara ruta → vista → roles autorizados:
 
 ```js
-// src/router/routes.js (ilustrativo)
 export const routes = [
-  { path: '/login',        view: 'login',          public: true },
-  { path: '/',             view: 'home',           roles: ['coder','team_leader','tutor','coordinador'] },
-  { path: '/evaluables',   view: 'evaluables',     roles: ['coder'] },
-  { path: '/evaluar/:id',  view: 'evaluation-form',roles: ['coder'] },
-  { path: '/historial',    view: 'history',        roles: ['coder','coordinador'] },
-  { path: '/dashboard',    view: 'dashboard',      roles: ['coordinador'] },
-  { path: '*',             view: 'not-found',      public: true },
+  { path: '/login',        view: 'login',           public: true },
+  { path: '/',             view: 'home',            roles: ['coder','team_leader','tutor','coordinador'] },
+  { path: '/evaluables',   view: 'evaluables',      roles: ['coder'] },
+  { path: '/evaluar/:id',  view: 'evaluation-form', roles: ['coder'] },
+  { path: '/historial',    view: 'history',         roles: ['coder','coordinador'] },
+  { path: '/dashboard',    view: 'dashboard',       roles: ['coordinador'] },
+  { path: '*',             view: 'not-found',       public: true },
 ];
 ```
 
-- **Guards:** antes de renderizar, el router verifica sesión (`auth.store`) y rol. Sin sesión → `/login`; rol no autorizado → `not-found`/"no autorizado".
+- **Guards:** antes de renderizar se valida sesión (`auth.store`) y rol. Sin sesión → `/login`; rol no autorizado → "no autorizado".
 
-## Gestión de estado
+## Gestión de estado (frontend)
 
-- Store **pub/sub** minimalista (sin librerías). `store.getState()`, `store.setState(patch)`, `store.subscribe(fn)`.
-- Stores por dominio: `auth.store` (usuario, token, rol), `ui.store` (loading, toasts).
-- Las vistas se suscriben a los slices que necesitan y se re-renderizan ante cambios.
-- El estado de sesión se **hidrata** desde `localStorage` al arrancar (`main.js`).
+- Store **pub/sub** sin librerías: `getState()`, `setState(patch)`, `subscribe(fn)`.
+- Slices por dominio: `auth.store` (usuario, token, rol), `ui.store` (loading, toasts).
+- La sesión se **hidrata** desde `localStorage` al arrancar (`main.js`).
+
+## Backend — arquitectura por capas (FastAPI)
+
+| Capa | Responsabilidad | Regla |
+|------|-----------------|-------|
+| `routers/` | Definir endpoints, validar I/O con Pydantic, códigos HTTP | No contiene lógica de negocio |
+| `services/` | **Lógica de negocio** (reglas, cálculos, orquestación) | No conoce detalles HTTP |
+| `repositories/` | Consultas y acceso a datos vía ORM | Único lugar con queries |
+| `models/` | Entidades SQLAlchemy mapeadas a MySQL | Definen el esquema |
+| `schemas/` | Contratos Pydantic (validación/serialización) | Frontera de datos |
+| `deps.py` | Dependencias: `get_db`, `get_current_user`, `require_role` | Inyección/seguridad |
+
+Ejemplo de RBAC con dependencias (ilustrativo):
+
+```python
+# app/deps.py
+def require_role(*roles):
+    def checker(user = Depends(get_current_user)):
+        if user.role not in roles:
+            raise HTTPException(status_code=403, detail="No autorizado")
+        return user
+    return checker
+
+# app/routers/metrics.py
+@router.get("/metrics/summary")
+def summary(period_id: int, user = Depends(require_role("coordinador")),
+            db = Depends(get_db)):
+    return metrics_service.build_summary(db, period_id)
+```
 
 ## Comunicación con la API
 
-- Toda llamada pasa por `services/http.js`:
-  - Prefija `baseURL` (de `config/env.js`).
-  - Inyecta `Authorization: Bearer <token>` si hay sesión.
-  - Serializa/parsea JSON.
-  - Normaliza errores a una forma común `{ status, message }`.
-- Cada `*.service.js` expone funciones de dominio (`evaluationService.submit(payload)`), nunca llama a `fetch` directo.
+- En frontend, **toda** llamada pasa por `services/http.js`: prefija `API_BASE_URL`, inyecta `Authorization: Bearer <token>`, serializa/parsea JSON y **normaliza errores** a `{ status, message }`.
+- Cada `*.service.js` expone funciones de dominio; nunca `fetch` directo en vistas.
 - **Contrato REST del MVP:**
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | `/auth/login` | Autenticación; devuelve `{ token, user }` |
+| POST | `/auth/login` | Autenticación → `{ token, user }` |
 | GET | `/users?role=team_leader` | Evaluables por rol |
-| GET | `/forms?targetRole=team_leader` | Plantilla de formulario por rol |
-| POST | `/evaluations` | Registrar evaluación |
-| GET | `/evaluations?evaluatorId=:id` | Historial del Coder |
-| GET | `/evaluations?evaluateeId=:id` | Histórico por evaluado |
-| GET | `/metrics/summary?period=:p` | KPIs agregados del dashboard |
+| GET | `/forms?target_role=team_leader` | Plantilla de formulario por rol |
+| POST | `/evaluations` | Registrar evaluación (con reglas de negocio) |
+| GET | `/evaluations?evaluator_id=:id` | Historial del Coder |
+| GET | `/evaluations?evaluatee_id=:id` | Histórico por evaluado (respeta anonimato) |
+| GET | `/metrics/summary?period_id=:p` | KPIs agregados del dashboard |
 
-> En desarrollo, json-server sirve estos recursos desde `db.json` (los endpoints `/auth` y `/metrics` se simulan con rutas custom o middleware).
+> FastAPI expone documentación interactiva automática en `/docs` (Swagger) y `/redoc`, útil para pruebas y sustentación.
 
 ## Manejo de autenticación
 
-- Login → `POST /auth/login` → se guardan `token` y `user` en `localStorage` y en `auth.store`.
-- El token (JWT) viaja en cada petición vía `http.js`.
-- `401` global → limpiar sesión y redirigir a `/login`.
-- Logout → limpiar `localStorage` + `auth.store` + redirigir.
-- Autorización por rol resuelta en los guards del router y en el render condicional de la UI.
+- Login → `POST /auth/login`: backend verifica hash, emite **JWT** firmado. Frontend guarda `token` y `user` en `localStorage` + `auth.store`.
+- El token viaja en cada petición (`http.js`); el backend lo valida en `get_current_user`.
+- `401` global en frontend → limpiar sesión + redirigir a `/login`. Logout → limpiar storage + store.
+- **Autorización por rol** en backend (`require_role`) — autoridad real — y en frontend (guards) — solo UX.
 
 ## Manejo de errores
 
-- **Capa HTTP:** errores de red y códigos no-2xx se normalizan y propagan.
-- **Capa UI:** las vistas capturan errores y muestran un `toast` (`ui.store`) o un estado de error en la propia vista; nunca dejan la app en blanco.
-- **Validación de formularios:** en cliente con `utils/validators.js`; errores por campo antes de enviar.
-- **Estados de carga/vacío:** componentes `loader` y estado vacío estandarizados para cada vista que consume datos.
-- **Errores no controlados:** `window.onerror` / `unhandledrejection` registran y muestran un toast genérico.
+**Backend**
+- Validación de entrada con Pydantic → `422` automático con detalle por campo.
+- Errores de negocio → `HTTPException` con código correcto (`400/403/404/409`).
+- Manejadores globales para excepciones no controladas → `500` con cuerpo JSON consistente; logging.
+
+**Frontend**
+- `http.js` normaliza errores de red y códigos no-2xx.
+- Las vistas muestran `toast` (`ui.store`) o estado de error; nunca dejan la pantalla en blanco.
+- Validación de formularios en cliente (`utils/validators.js`) antes de enviar.
+- Estados de **carga** y **vacío** estandarizados (`loader`, estado vacío).
+- `window.onerror` / `unhandledrejection` → toast genérico + log.

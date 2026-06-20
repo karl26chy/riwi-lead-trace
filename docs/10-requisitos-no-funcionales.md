@@ -31,7 +31,8 @@ Definidos con criterio MVP: suficientes para un piloto confiable, sin sobreingen
 ## 🧰 Mantenibilidad
 - Código modular con responsabilidades separadas (router/store/services/views/components).
 - **Convenciones** unificadas (ver [`08-diseno-tecnico.md`](./08-diseno-tecnico.md)).
-- Toda la data pasa por `services` → un único punto para cambiar de mock a API real.
+- En el frontend, toda la data pasa por `services` → un único punto de integración con la API.
+- En el backend, la lógica de negocio vive en `services` y el acceso a datos en `repositories` → cambios localizados.
 - Documentación viva en `/docs`; commits con Conventional Commits.
 - Dependencias mínimas → menor superficie de mantenimiento para un equipo de una persona.
 
@@ -52,4 +53,4 @@ Definidos con criterio MVP: suficientes para un piloto confiable, sin sobreingen
 | Usabilidad | Completar evaluación en ≤3 clics desde el listado |
 | Accesibilidad | Navegable 100% por teclado; contraste AA |
 | Responsive | Funcional y legible desde 320px |
-| Mantenibilidad | Cambio mock→API real solo en capa `services` |
+| Mantenibilidad | Lógica de negocio aislada en `services` (front y back) |

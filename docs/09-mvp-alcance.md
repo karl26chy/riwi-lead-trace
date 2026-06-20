@@ -6,7 +6,9 @@ Filosofía: **startup validando una idea**. El MVP debe ser lo mínimo para comp
 
 | Funcionalidad | Por qué es obligatoria |
 |---------------|------------------------|
-| Inicio de sesión | Sin identidad no hay feedback atribuible ni roles |
+| **Backend FastAPI + MySQL** funcional | Requisito de la rúbrica: integración front + back + persistencia |
+| **Lógica de negocio** (anonimato, no-duplicado, métricas, RBAC) | Requisito: no limitarse a CRUD básico |
+| Inicio de sesión (con JWT) | Sin identidad no hay feedback atribuible ni roles |
 | Gestión de roles (Coder, TL, Tutor, Coordinador) | Define qué ve y hace cada usuario |
 | Listar Team Leaders y Tutores evaluables | Punto de entrada de la acción principal |
 | Evaluar Team Leader (formulario estructurado) | Núcleo de la hipótesis del producto |
@@ -17,6 +19,7 @@ Filosofía: **startup validando una idea**. El MVP debe ser lo mínimo para comp
 | Dashboard de resultados (Coordinador) | Convierte datos en decisión; razón de negocio |
 | Métricas e indicadores básicos | Mide calidad del acompañamiento |
 | SPA responsive y navegable | Restricción técnica + usabilidad básica |
+| Despliegue accesible (front + back) | Requisito: app funcional disponible para la sustentación |
 
 **Visualización de tendencias** y **seguimiento histórico (coordinador)** se incluyen como `Should`: aportan a la validación pero pueden recortarse si la capacidad aprieta.
 
@@ -24,7 +27,6 @@ Filosofía: **startup validando una idea**. El MVP debe ser lo mínimo para comp
 
 | Funcionalidad | Cuándo / por qué se pospone |
 |---------------|------------------------------|
-| Backend/API propios en producción | El MVP valida la UX/proceso; en dev se usa API mock |
 | CRUD de formularios y criterios desde la UI | Las plantillas se siembran en BD; editor visual es v2 |
 | Reportes avanzados / exportación PDF estilizada | CSV/impresión básica como `Could`; lo demás es futuro |
 | Notificaciones (email/in-app) y recordatorios | No esencial para validar la hipótesis |

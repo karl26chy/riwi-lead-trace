@@ -39,7 +39,8 @@ Validar, mediante un MVP funcional, que un proceso de **feedback bidireccional e
 
 ## Supuestos y restricciones
 
-- Lo desarrolla **una sola persona** → priorizar simplicidad y velocidad, evitar sobreingeniería.
-- SPA en **HTML5 + CSS3 + JS Vanilla**, responsive y preparada para consumir **APIs REST**.
-- Alcance **MVP**: validar la idea, no construir el producto final.
-- El backend/API real puede no existir aún → el frontend se desarrolla contra una **API mock** con contrato REST estable.
+- Lo desarrolla un **equipo de 5 Coders** bajo Scrum (Proyecto Integrador, Ruta Básica) → priorizar simplicidad, paralelización y evidencia de contribución individual.
+- Aplicación **full-stack**: SPA en **HTML5 + CSS3 + JS Vanilla** + backend **FastAPI** + **MySQL** (3FN).
+- Debe incluir **lógica de negocio** identificable (no limitarse a CRUD básico).
+- Alcance **MVP**: validar la idea con una solución funcional, estable y con valor para el usuario.
+- Cronograma de **5 semanas** con metodología Scrum y **GitFlow** obligatorios.

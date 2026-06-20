@@ -1,7 +1,13 @@
 -- =====================================================================
 -- Riwi LeadTrace — Script SQL inicial (MVP)
--- Motor de referencia: MySQL 8 / MariaDB (ajustar tipos para PostgreSQL)
+-- Motor: MySQL 8
+-- Modelo relacional normalizado hasta 3FN (ver docs/07-base-de-datos.md)
+-- Uso: mysql -u root -p < database/schema.sql
 -- =====================================================================
+
+CREATE DATABASE IF NOT EXISTS riwi_lead_trace
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE riwi_lead_trace;
 
 -- Idempotencia para entorno de desarrollo
 DROP TABLE IF EXISTS evaluation_answers;

@@ -4,124 +4,147 @@ Guía para asistentes de IA (Claude Code y similares) que trabajen en **Riwi Lea
 
 ## Qué es este proyecto
 
-MVP de **feedback ascendente**: una **SPA** que permite a los **Coders** evaluar a **Team Leaders** y **Tutores** con formularios estructurados (con opción anónima), generando trazabilidad, métricas y tendencias para los **Coordinadores / responsables académicos** de Riwi.
+MVP **full-stack** de **feedback ascendente** para el **Proyecto Integrador de Riwi (Ruta Básica)**: una **SPA** permite a los **Coders** evaluar a **Team Leaders** y **Tutores** con formularios estructurados (con opción anónima); un **backend FastAPI + MySQL** persiste y procesa la información, generando trazabilidad, métricas y tendencias para los **Coordinadores**.
 
-> **Estado actual del repositorio:** fase de **planeación**. El repo contiene la documentación Scrum y de diseño técnico (`/docs`), el script SQL (`/database`) y esta guía. **Todavía no hay código de la SPA.** Al implementar, sigue la arquitectura ya definida en `/docs` — no la reinventes.
+> **Estado actual:** fase de **planeación**. El repo contiene documentación Scrum y de diseño (`/docs`), el script SQL (`/database`) y esta guía. **Todavía no hay código de la app.** Al implementar, sigue la arquitectura definida en `/docs` — no la reinventes.
+
+## Contexto importante (rúbrica del proyecto integrador)
+
+- **Equipo de 5 integrantes** (no una sola persona). Roles Scrum: Scrum Master/Líder, Product Owner, 2 Backend Devs, 1 Frontend Dev. Todos desarrollan y deben comprender la solución completa.
+- Es **obligatorio un backend real** con lógica de negocio, gestión de rutas, validación, manejo de errores e integración con BD.
+- **No puede limitarse a CRUD básico**: debe haber **lógica de negocio identificable**.
+- **GitFlow obligatorio**: cada integrante debe evidenciar commits propios, ramas y Pull Requests.
+- Entregables: repo + README, documento técnico, mockups, pitch comercial (inglés), pitch técnico (español), app desplegada. Ver `docs/11-entregables-y-evaluacion.md`.
 
 ## Restricciones técnicas (NO negociables)
 
-- **SPA** (Single Page Application).
-- **HTML5 + CSS3 + JavaScript Vanilla (ES Modules)**.
-- **Prohibido** usar React, Angular, Vue u otro framework de UI.
-- Vite (dev server/bundler) y json-server (API mock) **sí** están permitidos: son herramientas de desarrollo, no frameworks de UI.
-- Arquitectura **modular**, **responsive** (mobile-first) y preparada para **APIs REST**.
-- Alcance **MVP**, desarrollado por **una sola persona** → prioriza simplicidad, velocidad y mantenibilidad. **No sobreingenierizar.**
+### Frontend
+- **SPA** en **HTML5 + CSS3 + JavaScript Vanilla (ES Modules)**.
+- **Prohibido** React, Angular, Vue u otro framework de UI.
+- Permitido: Tailwind CSS o Bootstrap, precompiladores (Sass/Less), y Vite como dev server/bundler.
+- Responsive (mobile-first), validación de formularios, consumo de la API REST.
+
+### Backend
+- **Python + FastAPI** (decisión del equipo).
+- SQLAlchemy (ORM) + PyMySQL para acceso a MySQL.
+- Validación con **Pydantic**, autenticación **JWT**, autorización por rol (RBAC) vía dependencias.
+- Lógica de negocio en la capa `services` (no en los routers).
+
+### Base de datos
+- **MySQL**, modelo relacional **normalizado hasta 3FN**, integridad referencial (FKs), CRUD completo y consultas agregadas para métricas.
 
 ## Documentación fuente de verdad
-
-Antes de decidir algo de producto o arquitectura, consulta `/docs`:
 
 | Tema | Archivo |
 |------|---------|
 | Visión, objetivos, métricas | `docs/01-vision-y-producto.md` |
 | Product Backlog (IDs, SP, prioridad) | `docs/02-product-backlog.md` |
-| Historias de usuario + criterios de aceptación | `docs/03-historias-de-usuario.md` |
+| Historias + criterios de aceptación | `docs/03-historias-de-usuario.md` |
 | Épicas | `docs/04-epicas.md` |
-| Sprints 1–3 | `docs/05-sprint-planning.md` |
-| **Arquitectura, rutas, estado, API, errores** | `docs/06-arquitectura.md` |
-| **Base de datos (MER, relacional, SQL)** | `docs/07-base-de-datos.md` |
-| **Convenciones, Git flow, estructura repo** | `docs/08-diseno-tecnico.md` |
-| Alcance MVP (dentro/fuera) | `docs/09-mvp-alcance.md` |
+| Sprints (cronograma 5 semanas) | `docs/05-sprint-planning.md` |
+| **Arquitectura full-stack** | `docs/06-arquitectura.md` |
+| **Base de datos (MER, 3FN, SQL)** | `docs/07-base-de-datos.md` |
+| **Convenciones, GitFlow, repo** | `docs/08-diseno-tecnico.md` |
+| Alcance MVP | `docs/09-mvp-alcance.md` |
 | Requisitos no funcionales | `docs/10-requisitos-no-funcionales.md` |
+| Entregables y evaluación | `docs/11-entregables-y-evaluacion.md` |
+| Justificación tecnológica | `docs/12-justificacion-tecnologica.md` |
 | Script SQL ejecutable | `database/schema.sql` |
 
 ## Arquitectura en una pantalla
 
-Capas: **Vistas/Componentes** → **Store (pub/sub)** → **Services** → **http (fetch)** → **API REST**.
-
-Estructura objetivo de `src/` (detalle completo en `docs/06-arquitectura.md`):
+Monorepo full-stack:
 
 ```
-src/
-├── main.js            # bootstrap (monta router, hidrata sesión)
-├── config/            # env, constantes (API_BASE_URL)
-├── router/            # router (History API) + tabla de rutas con roles
-├── store/             # store pub/sub + slices (auth, ui)
-├── services/          # http.js + *.service.js (única capa que llama a la API)
-├── views/             # una vista por ruta (*.view.js)
-├── components/        # UI reutilizable (navbar, rating-input, toast...)
-├── utils/             # dom, validators, format
-└── styles/            # CSS (variables, base, layout, components)
+SPA (frontend/)  ──HTTP/REST(JSON, JWT)──▶  API (backend/ FastAPI)  ──SQLAlchemy──▶  MySQL
+   vistas → store → services → http              routers → services → repositories → models
 ```
 
-Reglas de arquitectura:
-- Las **vistas no llaman a `fetch` directamente** → usan `services/*`.
-- Los **services no tocan el DOM** → devuelven datos.
-- El **estado compartido vive en el store**, no en variables globales sueltas.
-- Cambiar de API mock a backend real debe afectar **solo** a `services/` y `config/`.
+### `frontend/src/`
+```
+main.js · config/ · router/ (History API + roles) · store/ (pub/sub)
+services/ (http.js + *.service.js, única capa que llama a la API)
+views/ (*.view.js) · components/ · utils/ · styles/
+```
+Reglas: las vistas **no** llaman `fetch` directo (usan `services/`); los services **no** tocan el DOM; el estado compartido vive en el `store`.
+
+### `backend/app/`
+```
+main.py · core/ (config, security/JWT, database)
+models/ (SQLAlchemy) · schemas/ (Pydantic) · routers/ (endpoints)
+services/ (LÓGICA DE NEGOCIO) · repositories/ (queries) · deps.py (get_db, get_current_user, require_role)
+```
+Reglas: los **routers** validan entrada/salida con Pydantic y delegan; la **lógica de negocio vive en `services/`**; el acceso a datos pasa por `repositories/`. Nunca pongas reglas de negocio en los routers ni queries crudas dispersas en endpoints.
+
+Detalle completo en `docs/06-arquitectura.md`.
 
 ## Roles del sistema
 
-`coder` · `team_leader` · `tutor` · `coordinador`. La navegación y las rutas se restringen por rol (ver guards en `docs/06-arquitectura.md`). Recuerda: el control de rol en cliente es **UX**; la seguridad real es responsabilidad del backend.
-
-## Convenciones de código
-
-- Archivos/carpetas: **kebab-case** con sufijos `*.view.js`, `*.service.js`, `*.store.js`.
-- JS: `camelCase` (vars/funcs), `UPPER_SNAKE_CASE` (constantes), booleanos con `is/has/can`.
-- CSS: **BEM** + custom properties en `:root`, **mobile-first**.
-- BD/API: `snake_case` en columnas; endpoints REST en plural (`/evaluations`).
-- Detalle completo: `docs/08-diseno-tecnico.md`.
-
-## Git y entrega
-
-- **Branch flow** (GitFlow simplificado): `main` ← `develop` ← `feature/<ID>-<slug>` (ej. `feature/EVAL-02-evaluar-team-leader`).
-- **Conventional Commits**: `feat(eval): ...`, `fix(auth): ...`, `docs(...): ...`. Referencia el ID de la historia.
-- Una historia se cierra cuando cumple su **Definition of Done** (ver `docs/02-product-backlog.md`).
-- **No abrir Pull Requests salvo que el usuario lo pida explícitamente.**
-- En sesiones asistidas, trabaja en la rama indicada por la tarea; integra hacia `develop` siguiendo el flujo.
-
-## Comandos previstos (cuando exista `package.json`)
-
-```bash
-npm install        # dependencias de desarrollo
-npm run dev        # Vite dev server (http://localhost:5173)
-npm run mock:api   # json-server (http://localhost:3000)
-npm run build      # bundle de producción en /dist
-npm run preview    # sirve el build localmente
-npm run lint       # ESLint
-npm run format     # Prettier
-```
-
-> Estos scripts aún no existen; defínelos en `package.json` al inicializar el proyecto (historia CORE-01) respetando estos nombres.
-
-## Contrato REST del MVP (resumen)
-
-| Método | Endpoint | Uso |
-|--------|----------|-----|
-| POST | `/auth/login` | login → `{ token, user }` |
-| GET | `/users?role=team_leader` | evaluables por rol |
-| GET | `/forms?targetRole=team_leader` | plantilla de formulario |
-| POST | `/evaluations` | registrar evaluación |
-| GET | `/evaluations?evaluatorId=:id` | historial del Coder |
-| GET | `/evaluations?evaluateeId=:id` | histórico por evaluado |
-| GET | `/metrics/summary?period=:p` | KPIs del dashboard |
-
-Detalle y modelo de datos: `docs/06-arquitectura.md` y `docs/07-base-de-datos.md`.
+`coder` · `team_leader` · `tutor` · `coordinador`. RBAC aplicado **tanto en frontend (UX)** como en **backend (seguridad real)**. El control en cliente nunca sustituye la verificación en el servidor.
 
 ## Reglas de negocio que NO debes romper
 
-1. **Anonimato real:** si `is_anonymous` es true, **no** persistas ni expongas el `evaluator_id`. Nunca permitas reconstruir la identidad del evaluador anónimo.
-2. **Un Coder no evalúa dos veces** al mismo evaluado en el mismo periodo (índice único en BD).
-3. **Validación de formularios** antes de enviar; nada de evaluaciones incompletas.
-4. **Seguridad mínima:** contraseñas siempre hasheadas (backend); manejo de `401` cierra sesión.
-5. **Respeta el alcance MVP** (`docs/09-mvp-alcance.md`): no implementes funcionalidades marcadas como "fuera del MVP" sin que el usuario lo pida.
+1. **Anonimato real:** si `is_anonymous` es true, **no** persistas ni expongas `evaluator_id`. Imposible reconstruir la identidad del evaluador anónimo.
+2. **Un Coder no evalúa dos veces** al mismo evaluado en el mismo periodo (validar en backend + índice único en BD).
+3. **Validación doble:** en cliente (UX) y en servidor con Pydantic (autoridad).
+4. **Lógica de negocio identificable** (no solo CRUD): métricas agregadas (promedios por criterio, % participación, tendencias), estados de evaluación (borrador/enviada), RBAC. No la degrades a CRUD plano.
+5. **Seguridad:** contraseñas siempre hasheadas (passlib/bcrypt); `401` cierra sesión en cliente.
+6. **Respeta el alcance MVP** (`docs/09-mvp-alcance.md`): no implementes lo marcado "fuera del MVP" sin que el usuario lo pida.
+
+## Convenciones de código
+
+- **Frontend:** archivos kebab-case con sufijos `*.view.js`, `*.service.js`, `*.store.js`; JS `camelCase`; CSS **BEM** + custom properties, mobile-first.
+- **Backend (Python):** `snake_case` para funciones/variables/módulos, `PascalCase` para clases (modelos/schemas); seguir **PEP 8**.
+- **BD/API:** columnas en `snake_case`; endpoints REST en plural (`/evaluations`).
+- Detalle: `docs/08-diseno-tecnico.md`.
+
+## Git y entrega
+
+- **GitFlow:** `main` ← `develop` ← `feature/<ID>-<slug>` (ej. `feature/EVAL-02-evaluar-team-leader`). Hotfixes desde `main`.
+- **Conventional Commits:** `feat(eval): ...`, `fix(auth): ...`, `docs(...): ...`; referencia el ID de la historia.
+- **Cada integrante** evidencia commits/ramas/PRs propios (requisito de evaluación).
+- Una historia se cierra al cumplir su **Definition of Done** (`docs/02-product-backlog.md`).
+- **No abrir Pull Requests salvo que el usuario lo pida explícitamente.**
+- En sesiones asistidas, trabaja en la rama indicada por la tarea e integra hacia `develop`.
+
+## Comandos previstos (cuando exista el código)
+
+```bash
+# Base de datos
+mysql -u root -p < database/schema.sql
+
+# Backend (FastAPI)
+cd backend && python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload          # http://localhost:8000  (Swagger: /docs)
+pytest                                   # pruebas
+
+# Frontend (SPA)
+cd frontend && npm install
+npm run dev                              # http://localhost:5173
+npm run build                            # bundle de producción
+```
+
+## Contrato REST del MVP (resumen)
+
+| Método | Endpoint | Uso | Lógica de negocio |
+|--------|----------|-----|-------------------|
+| POST | `/auth/login` | login → `{ token, user }` | hash + JWT |
+| GET | `/users?role=team_leader` | evaluables por rol | RBAC |
+| GET | `/forms?target_role=team_leader` | plantilla de formulario | — |
+| POST | `/evaluations` | registrar evaluación | anonimato + no-duplicado + validación |
+| GET | `/evaluations?evaluator_id=:id` | historial del Coder | RBAC (propio) |
+| GET | `/evaluations?evaluatee_id=:id` | histórico por evaluado | RBAC (coordinador), respeta anonimato |
+| GET | `/metrics/summary?period_id=:p` | KPIs del dashboard | **agregaciones** |
+
+Detalle y modelo de datos: `docs/06-arquitectura.md` y `docs/07-base-de-datos.md`.
 
 ## Cómo trabajar en este repo (para el asistente)
 
-1. **Lee la historia** correspondiente en `docs/03-historias-de-usuario.md` y sus criterios de aceptación.
-2. **Respeta la arquitectura** de `docs/06-arquitectura.md` (capas y ubicación de archivos).
-3. Implementa lo mínimo para cumplir los criterios; **sin sobreingeniería**.
-4. Asegura **responsive** y **accesibilidad** básica (ver `docs/10-requisitos-no-funcionales.md`).
-5. Verifica manualmente contra la API mock; sin errores en consola.
+1. **Lee la historia** en `docs/03-historias-de-usuario.md` y sus criterios de aceptación.
+2. **Respeta la arquitectura** de `docs/06-arquitectura.md` (capas y ubicación de archivos en front y back).
+3. Implementa lo mínimo para cumplir los criterios; **sin sobreingeniería** y **sin degradar la lógica de negocio a CRUD**.
+4. Valida en **servidor** (Pydantic) además de en cliente; maneja errores y devuelve códigos HTTP correctos.
+5. Asegura **responsive** y **accesibilidad** básica (`docs/10-requisitos-no-funcionales.md`).
 6. Commits pequeños con Conventional Commits; cumple la Definition of Done.
-7. Si actualizas decisiones de arquitectura/producto, **actualiza también `/docs` y este `CLAUDE.md`** para mantenerlos como fuente de verdad.
+7. Si cambias decisiones de arquitectura/producto, **actualiza también `/docs` y este `CLAUDE.md`**.

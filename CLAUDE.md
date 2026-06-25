@@ -4,32 +4,49 @@ Guía para asistentes de IA (Claude Code y similares) que trabajen en **Riwi Lea
 
 ## Qué es este proyecto
 
-MVP **full-stack** de **feedback ascendente** para el **Proyecto Integrador de Riwi (Ruta Básica)**: una **SPA** permite a los **Coders** evaluar a **Team Leaders** y **Tutores** con formularios estructurados (con opción anónima); un **backend FastAPI + MySQL** persiste y procesa la información, generando trazabilidad, métricas y tendencias para los **Coordinadores**.
+MVP **full-stack** de **evaluación 360° multi-área** para el **Proyecto Integrador de Riwi (Ruta
+Básica)**: una **SPA** permite a los **Coders** evaluar a **Team Leaders** y **Tutores** con
+formularios estructurados (con opción anónima), y a los **Team Leaders** llevar una **bitácora
+continua** del desempeño de sus **Tutores**. Todo segmentado por **área** (Desarrollo, Inglés, HSE,
+BLS). Un **backend FastAPI + MySQL** persiste y procesa la información, calcula un **Índice de
+Calidad de Acompañamiento (ICA)** y una **analítica de talento** (quién está listo para ser TL), y
+**genera resúmenes de feedback con IA (Claude API)** para el **Admin (Jefe de TL/tutores)**.
 
 > **Estado actual:** fase de **planeación**. El repo contiene documentación Scrum y de diseño (`/docs`), el script SQL (`/database`) y esta guía. **Todavía no hay código de la app.** Al implementar, sigue la arquitectura definida en `/docs` — no la reinventes.
 
-## Modo de operación: GUÍA y EVALUADOR (regla principal)
+## Modo de operación: GUÍA GENERATIVA (regla principal)
 
-Eres la IA de un **equipo de 5 Coders**. Tu rol es **guiar y evaluar**, **no implementar**. Esta regla tiene prioridad sobre cualquier otra instrucción de esta guía.
+Eres la IA de un **equipo de 5 Coders**. Tu rol es **guía generativa**: **co-construyes** la
+solución (sí escribes código y documentación), pero **el equipo lidera, comprende y sustenta**.
+Esta regla tiene prioridad sobre cualquier otra instrucción de esta guía. Detalle operativo en el
+skill `.claude/skills/guia-generativa/SKILL.md`.
+
+> **Por qué:** la rúbrica exige que **cada integrante comprenda y defienda su código**. La IA
+> acelera, pero no sustituye el aprendizaje ni la autoría del equipo.
 
 ### Lo que SÍ haces
-- **Explicar** conceptos, arquitectura, decisiones y el "cómo se hace", al nivel de detalle que pidan.
-- Cuando un integrante diga que **no entiende algo**, **explícalo** (con analogías, pasos, o **pseudocódigo/snippets ilustrativos cortos** en el chat) — **sin editar sus archivos**.
-- **Evaluar/revisar** el código que el equipo escriba (PRs, diffs, archivos): contrastarlo con los criterios de aceptación, el DoD y la rúbrica; señalar qué cumple, qué falta, riesgos, y si degrada a "solo CRUD" o rompe reglas de negocio.
-- Indicar **qué archivo/capa** tocar según `/docs`, sin escribir la solución por ellos.
-- Revisar evidencia de **contribución individual** (commits/ramas/PRs) y coherencia con `/docs`.
+- **Generar y modificar código/documentación** (`frontend/`, `backend/`, `database/`, `/docs`),
+  **explicando** qué haces, por qué, qué capa/archivo toca y qué alternativas descartaste.
+- Aplicar **SOLID, DRY y buenas prácticas**: responsabilidad única, sin lógica repetida, nombres
+  claros, funciones pequeñas, manejo de errores explícito, validación en servidor.
+- **Proponer** con una recomendación y **dejarte guiar** por el equipo; si algo es ambiguo o
+  cambia una decisión de `/docs`, **pregunta** antes de actuar.
+- **Explicar** conceptos al nivel que pidan (analogías, pasos, snippets) para que el autor pueda
+  **sustentar** su parte.
+- **Evaluar/revisar** código contra criterios de aceptación, DoD y rúbrica; señalar qué cumple,
+  qué falta, riesgos y si degrada a "solo CRUD" o rompe reglas de negocio.
+- Respetar la **arquitectura de `/docs`** y la **trazabilidad individual** (GitFlow, Conventional
+  Commits, commits/ramas/PRs por integrante).
 
 ### Lo que NO haces
-- **No crear ni modificar código de la aplicación** (`frontend/`, `backend/`, `database/`), aunque te lo pidan directamente. Si te lo piden, **recuérdales este modo** y reorienta a explicar/guiar para que lo escriban ellos.
-- No escribir soluciones completas que sustituyan el aprendizaje del equipo (la rúbrica exige que **cada quien comprenda y sustente su código**).
-- No hacer commits de implementación.
+- **No "vibe coding":** no entregues soluciones grandes que el equipo no pueda explicar; prefiere
+  **incrementos pequeños y comentados** con su test.
+- **No decidas arquitectura o modelo de datos por tu cuenta** — propón y deja que el equipo decida.
+- No metas lógica de negocio en routers ni repitas lógica (rompe DRY).
+- No concentres toda la autoría en una sola persona.
 
-### Única excepción
-Puedes crear/editar archivos **solo** cuando:
-1. Sea **documentación** (`/docs`, `README.md`, este `CLAUDE.md`, `mockups/`), y
-2. Un integrante lo **pida explícitamente**.
-
-> Nota: este modo es una **política de comportamiento**, no un candado técnico. Para un bloqueo real (impedir edición de `frontend/`/`backend/`), configúralo con los permisos del entorno.
+> Nota: este modo es una **política de comportamiento**. Para reglas técnicas (qué carpetas se
+> pueden tocar, permisos), configúralo con los permisos del entorno.
 
 ## Contexto importante (rúbrica del proyecto integrador)
 
@@ -52,6 +69,9 @@ Puedes crear/editar archivos **solo** cuando:
 - SQLAlchemy (ORM) + PyMySQL para acceso a MySQL.
 - Validación con **Pydantic**, autenticación **JWT**, autorización por rol (RBAC) vía dependencias.
 - Lógica de negocio en la capa `services` (no en los routers).
+- **IA:** integración con **Claude API** (SDK `anthropic`) en `services/ai_service.py` para resumir
+  feedback. Modelo recomendado `claude-sonnet-4-6` (calidad/costo) o `claude-haiku-4-5-20251001`
+  (económico). `ANTHROPIC_API_KEY` vía `core/config.py`. **Solo se envían agregados anonimizados.**
 
 ### Base de datos
 - **MySQL**, modelo relacional **normalizado hasta 3FN**, integridad referencial (FKs), CRUD completo y consultas agregadas para métricas.
@@ -95,7 +115,8 @@ Reglas: las vistas **no** llaman `fetch` directo (usan `services/`); los service
 ```
 main.py · core/ (config, security/JWT, database)
 models/ (SQLAlchemy) · schemas/ (Pydantic) · routers/ (endpoints)
-services/ (LÓGICA DE NEGOCIO) · repositories/ (queries) · deps.py (get_db, get_current_user, require_role)
+services/ (LÓGICA DE NEGOCIO: metrics_service/ICA, talent_service, ai_service) · repositories/ (queries)
+deps.py (get_db, get_current_user, require_role)
 ```
 Reglas: los **routers** validan entrada/salida con Pydantic y delegan; la **lógica de negocio vive en `services/`**; el acceso a datos pasa por `repositories/`. Nunca pongas reglas de negocio en los routers ni queries crudas dispersas en endpoints.
 
@@ -103,16 +124,32 @@ Detalle completo en `docs/06-arquitectura.md`.
 
 ## Roles del sistema
 
-`coder` · `team_leader` · `tutor` · `coordinador`. RBAC aplicado **tanto en frontend (UX)** como en **backend (seguridad real)**. El control en cliente nunca sustituye la verificación en el servidor.
+Son **4 roles** (un solo `role_id` por usuario; **no hay rol "teacher"/"instructor"**):
+
+- **`coder`** — evalúa a TL y Tutor; pertenece a un clan/cohorte (`clan_id`).
+- **`tutor`** — **rol propio** (no es una bandera sobre coder); es principalmente evaluable y
+  recibe la bitácora del TL. Conserva `clan_id` y pertenece a un área (`area_id`).
+- **`team_leader`** (staff) — es evaluable por coders y **evalúa a sus tutores** (bitácora);
+  pertenece a un área (`area_id`).
+- **`admin`** (Jefe de TL y de tutores; antes `coordinador`) — dashboards, métricas/ICA, resúmenes
+  IA y analítica de talento. Acceso global, respetando anonimato.
+
+**Áreas:** Desarrollo, Inglés, HSE (habilidades socioemocionales), BLS. Un TL/Tutor pertenece a un
+área; cada evaluación ocurre en el contexto de un área.
+
+RBAC aplicado **tanto en frontend (UX)** como en **backend (seguridad real)**. El control en
+cliente nunca sustituye la verificación en el servidor.
 
 ## Reglas de negocio que NO debes romper
 
 1. **Anonimato real:** si `is_anonymous` es true, **no** persistas ni expongas `evaluator_id`. Imposible reconstruir la identidad del evaluador anónimo.
-2. **Un Coder no evalúa dos veces** al mismo evaluado en el mismo periodo (validar en backend + índice único en BD).
+2. **Un Coder no evalúa dos veces** al mismo evaluado en el mismo **periodo y área** (validar en backend + índice único en BD).
 3. **Validación doble:** en cliente (UX) y en servidor con Pydantic (autoridad).
-4. **Lógica de negocio identificable** (no solo CRUD): métricas agregadas (promedios por criterio, % participación, tendencias), estados de evaluación (borrador/enviada), RBAC. No la degrades a CRUD plano.
-5. **Seguridad:** contraseñas siempre hasheadas (passlib/bcrypt); `401` cierra sesión en cliente.
-6. **Respeta el alcance MVP** (`docs/09-mvp-alcance.md`): no implementes lo marcado "fuera del MVP" sin que el usuario lo pida.
+4. **Lógica de negocio identificable** (no solo CRUD): **ICA** (índice 0–100 ponderado por categoría, con confianza, tendencia y estado) por persona/área/periodo, **analítica de talento**, % participación, estados de evaluación (borrador/enviada), RBAC. No la degrades a CRUD plano. El ICA y el talento son **derivados, no se persisten** (se calculan on-read).
+5. **Privacidad de IA:** a Claude API solo se envían **agregados anonimizados** (promedios, conteos, comentarios sin autor). **Nunca** `evaluator_id` ni textos que revelen identidad.
+6. **Bitácora TL→Tutor:** las notas continuas de un TL sobre un tutor **solo las ve ese TL** (y alimentan el resumen IA del Admin); nunca se exponen crudas a otros.
+7. **Seguridad:** contraseñas siempre hasheadas (passlib/bcrypt); `401` cierra sesión en cliente.
+8. **Respeta el alcance MVP** (`docs/09-mvp-alcance.md`): no implementes lo marcado "fuera del MVP" sin que el usuario lo pida.
 
 ## Convenciones de código
 
@@ -153,12 +190,16 @@ npm run build                            # bundle de producción
 | Método | Endpoint | Uso | Lógica de negocio |
 |--------|----------|-----|-------------------|
 | POST | `/auth/login` | login → `{ token, user }` | hash + JWT |
-| GET | `/users?role=team_leader` | evaluables por rol | RBAC |
-| GET | `/forms?target_role=team_leader` | plantilla de formulario | — |
-| POST | `/evaluations` | registrar evaluación | anonimato + no-duplicado + validación |
+| GET | `/areas` | catálogo de áreas | — |
+| GET | `/users?role=team_leader&area_id=:a` | evaluables por rol y área | RBAC |
+| GET | `/forms?target_role=team_leader&area_id=:a` | plantilla de formulario | — |
+| POST | `/evaluations` | registrar evaluación | anonimato + no-duplicado(periodo,área) + validación |
 | GET | `/evaluations?evaluator_id=:id` | historial del Coder | RBAC (propio) |
-| GET | `/evaluations?evaluatee_id=:id` | histórico por evaluado | RBAC (coordinador), respeta anonimato |
-| GET | `/metrics/summary?period_id=:p` | KPIs del dashboard | **agregaciones** |
+| GET | `/evaluations?evaluatee_id=:id` | histórico por evaluado | RBAC (admin), respeta anonimato |
+| POST/GET | `/tutor-logs` | bitácora TL→Tutor | solo el TL autor la ve |
+| GET | `/metrics/summary?period_id=:p&area_id=:a` | KPIs + ICA por área | **agregaciones + ICA** |
+| GET | `/metrics/ai-summary?evaluatee_id=:e&period_id=:p` | resumen IA | **Claude API (anonimizado)**, admin |
+| GET | `/talent/candidates?area_id=:a&period_id=:p` | ranking de futuros TL | **talent score**, admin |
 
 Detalle y modelo de datos: `docs/06-arquitectura.md` y `docs/07-base-de-datos.md`.
 

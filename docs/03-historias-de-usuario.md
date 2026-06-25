@@ -63,8 +63,9 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 **Como** sistema **quiero** mostrar funcionalidades según el rol **para** que cada usuario vea solo lo que le corresponde.
 
 **Criterios de aceptación**
-- [ ] El Coder ve evaluaciones e historial propio; no ve el dashboard de coordinación.
-- [ ] El Coordinador ve dashboard, métricas e histórico.
+- [ ] El Coder ve evaluaciones e historial propio; no ve el dashboard.
+- [ ] El Team Leader ve su bitácora de tutores; el Tutor ve su feedback agregado.
+- [ ] El Admin ve dashboard, ICA, resúmenes IA, talento e histórico.
 - [ ] Las rutas no autorizadas redirigen o muestran "no autorizado" (front).
 - [ ] El backend aplica `require_role` y responde `403` ante accesos no autorizados (autoridad real).
 - [ ] La navegación se construye dinámicamente según los permisos del rol.
@@ -77,8 +78,9 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 **Como** Coder **quiero** ver la lista de Team Leaders y Tutores que puedo evaluar **para** elegir a quién dar feedback.
 
 **Criterios de aceptación**
-- [ ] Lista obtenida desde la API, separada/filtrable por tipo (Team Leader / Tutor).
-- [ ] Indica si ya evalué a esa persona en el periodo actual.
+- [ ] Lista obtenida desde la API, filtrable por tipo (Team Leader / Tutor) y **área**.
+- [ ] Indica si ya evalué a esa persona en el periodo y área actual.
+- [ ] No me incluye a mí mismo (un tutor no se autoevalúa).
 - [ ] Estado vacío si no hay evaluables asignados.
 
 ### EVAL-02 — Evaluar Team Leader · `Must` · `5 SP`
@@ -112,7 +114,8 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 **Criterios de aceptación**
 - [ ] La evaluación se persiste vía `POST /evaluations` con validación Pydantic en servidor.
 - [ ] Maneja estados: borrador y enviada.
-- [ ] **Regla de negocio:** rechaza (`409`) una segunda evaluación del mismo evaluado en el mismo periodo.
+- [ ] **Regla de negocio:** rechaza (`409`) una segunda evaluación del mismo evaluado en el mismo **periodo y área**.
+- [ ] **Regla de negocio:** registra el `area_id` de la evaluación (segmenta el ICA).
 - [ ] Manejo de errores de red con reintento y mensaje claro.
 - [ ] Tras enviar, la persona evaluada aparece como "ya evaluada".
 
@@ -129,7 +132,7 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 - [ ] Las anónimas se muestran al propio autor pero marcadas como anónimas.
 
 ### HIST-02 — Seguimiento histórico · `Should` · `3 SP`
-**Como** Coordinador **quiero** consultar el histórico de evaluaciones por líder/tutor y periodo **para** dar seguimiento a su evolución.
+**Como** Admin **quiero** consultar el histórico de evaluaciones por líder/tutor y periodo **para** dar seguimiento a su evolución.
 
 **Criterios de aceptación**
 - [ ] Filtros por persona evaluada, rol y periodo.
@@ -141,31 +144,102 @@ Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
 ## ÉPICA DASH
 
 ### DASH-01 — Dashboard de resultados · `Must` · `5 SP`
-**Como** Coordinador **quiero** un panel con resultados agregados **para** entender rápidamente la calidad del acompañamiento.
+**Como** Admin **quiero** un panel con resultados agregados y el **ICA** por área **para** entender rápidamente la calidad del acompañamiento.
 
 **Criterios de aceptación**
 - [ ] Tarjetas resumen: nº de evaluaciones, promedio general, participación.
-- [ ] Ranking/listado de líderes y tutores con su promedio.
-- [ ] Filtro por periodo.
+- [ ] Ranking/listado de líderes y tutores con su **ICA (0–100)** y **estado** (Sólido/Estable/En riesgo/Datos insuficientes).
+- [ ] Filtro por **periodo y área**.
 
-### DASH-02 — Métricas e indicadores · `Should` · `5 SP`
-**Como** Coordinador **quiero** ver indicadores por criterio **para** identificar fortalezas y debilidades.
+### DASH-02 — ICA por criterio e indicadores · `Should` · `5 SP`
+**Como** Admin **quiero** ver el ICA desglosado por criterio **para** identificar fortalezas y debilidades.
 
 **Criterios de aceptación**
-- [ ] Promedio por categoría/criterio para una persona seleccionada.
-- [ ] Indicador de participación (% de Coders que evaluaron).
-- [ ] Distinción clara entre datos suficientes e insuficientes (n bajo).
+- [ ] Promedio por categoría/criterio (componentes del ICA) para una persona/área seleccionada.
+- [ ] Indicador de participación (% de Coders que evaluaron) y nivel de **confianza**.
+- [ ] **Datos insuficientes** cuando `n < N_MIN`: no se publica el ICA (se indica explícitamente).
 
 ### DASH-03 — Visualización de tendencias · `Should` · `3 SP`
-**Como** Coordinador **quiero** ver la evolución temporal de las calificaciones **para** detectar mejoras o deterioros.
+**Como** Admin **quiero** ver la evolución temporal de las calificaciones **para** detectar mejoras o deterioros.
 
 **Criterios de aceptación**
 - [ ] Gráfico de tendencia por persona y/o criterio a lo largo de periodos.
 - [ ] Renderizado accesible (con tabla alternativa de datos).
 
 ### DASH-04 — Reportes básicos (export) · `Could` · `3 SP`
-**Como** Coordinador **quiero** exportar los resultados **para** compartirlos fuera de la plataforma.
+**Como** Admin **quiero** exportar los resultados **para** compartirlos fuera de la plataforma.
 
 **Criterios de aceptación**
 - [ ] Exportar a CSV los resultados agregados visibles.
 - [ ] Vista imprimible del dashboard.
+
+---
+
+## ÉPICA AREA
+
+### AREA-01 — Modelo de áreas y 4 roles · `Must` · `3 SP`
+**Como** sistema **quiero** una dimensión de área y los 4 roles definidos **para** medir cada área por separado.
+
+**Criterios de aceptación**
+- [ ] Catálogo `areas` (Desarrollo, Inglés, HSE, BLS) expuesto en `GET /areas`.
+- [ ] Roles = coder, tutor, team_leader, admin (un solo `role_id` por usuario).
+- [ ] TL y Tutor tienen `area_id`; coder/admin pueden no tenerla.
+
+### AREA-02 — Evaluables y plantillas por área · `Must` · `3 SP`
+**Como** Coder **quiero** ver evaluables y formularios de mi área **para** dar feedback contextual.
+
+**Criterios de aceptación**
+- [ ] `GET /users?role=...&area_id=...` filtra evaluables por rol y área.
+- [ ] La plantilla cargada corresponde al rol objetivo y al área.
+- [ ] El `area_id` viaja al registrar la evaluación (EVAL-05).
+
+---
+
+## ÉPICA TLEVAL
+
+### TLEVAL-01 — Registrar nota de tutoría (TL→Tutor) · `Must` · `5 SP`
+**Como** Team Leader **quiero** registrar una nota cada vez que un Tutor da una tutoría **para** llevar su historial de desempeño.
+
+**Criterios de aceptación**
+- [ ] Textarea + valoración opcional (1–5); `POST /tutor-logs` valida en servidor (Pydantic).
+- [ ] La nota guarda `tl_id`, `tutor_id`, `area_id`, `comment`, `created_at`.
+- [ ] **Regla de negocio:** solo un team_leader puede crear notas (RBAC, `403` en otro caso).
+
+### TLEVAL-02 — Consultar mi bitácora · `Should` · `3 SP`
+**Como** Team Leader **quiero** ver el historial de notas de mis Tutores **para** acompañar su evolución.
+
+**Criterios de aceptación**
+- [ ] `GET /tutor-logs?tutor_id=...` devuelve solo las notas creadas por el TL autenticado.
+- [ ] **Regla de negocio:** un TL no puede ver notas de otro TL (`403`).
+- [ ] Filtro por tutor y orden cronológico; estado vacío.
+
+---
+
+## ÉPICA AIFEED
+
+### AIFEED-01 — Resumen de feedback con IA · `Should` · `5 SP`
+**Como** Admin **quiero** un resumen en lenguaje natural del feedback de una persona/área **para** decidir más rápido.
+
+**Criterios de aceptación**
+- [ ] `GET /metrics/ai-summary?evaluatee_id=...&period_id=...` (solo admin) devuelve texto generado por Claude API.
+- [ ] **Regla de privacidad:** el prompt solo incluye agregados anonimizados; nunca `evaluator_id` ni identidades.
+- [ ] El resumen se **cachea** (`ai_feedback_cache`); una segunda consulta no vuelve a llamar al modelo.
+
+### AIFEED-02 — Manejo de errores/costos de IA · `Could` · `2 SP`
+**Como** sistema **quiero** degradar con elegancia si la IA falla **para** no romper el dashboard.
+
+**Criterios de aceptación**
+- [ ] Si falta `ANTHROPIC_API_KEY` o la API falla, el endpoint responde un mensaje claro (no `500` sin contexto).
+- [ ] El dashboard muestra el ICA aunque el resumen IA no esté disponible.
+
+---
+
+## ÉPICA TALENT
+
+### TALENT-01 — Ranking de talento (futuros TL) · `Should` · `5 SP`
+**Como** Admin **quiero** un ranking de Tutores por preparación para ser TL **para** apoyar contratación/promoción.
+
+**Criterios de aceptación**
+- [ ] `GET /talent/candidates?area_id=...&period_id=...` (solo admin) devuelve tutores rankeados por **Talent Score (0–100)**.
+- [ ] El score combina ICA como tutor + consistencia + volumen de tutorías + tendencia (fórmula documentada).
+- [ ] Distingue **datos insuficientes** y respeta el anonimato de los evaluadores.

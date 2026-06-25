@@ -27,7 +27,8 @@
 │     │                                                        │
 │     ▼                                                        │
 │  Services  ◀── LÓGICA DE NEGOCIO (anonimato, no-duplicado,  │
-│     │           métricas agregadas, RBAC, estados)          │
+│     │           ICA por área, talento, resumen IA, RBAC)    │
+│     │           └─ ai_service ──HTTPS──▶ Claude API         │
 │     ▼                                                        │
 │  Repositories (consultas / acceso a datos)                  │
 │     │                                                        │
@@ -65,7 +66,10 @@ riwi-lead-trace/
 │       │   ├── auth.service.js
 │       │   ├── evaluation.service.js
 │       │   ├── user.service.js
-│       │   └── metrics.service.js
+│       │   ├── area.service.js          # catálogo de áreas
+│       │   ├── tutor-log.service.js     # bitácora TL→Tutor
+│       │   ├── talent.service.js        # ranking de talento (admin)
+│       │   └── metrics.service.js       # ICA + resumen IA
 │       ├── views/              # login, home, evaluables, evaluation-form,
 │       │                       # history, dashboard, not-found (*.view.js)
 │       ├── components/         # navbar, form-field, rating-input, card,
@@ -80,12 +84,14 @@ riwi-lead-trace/
 │   │   │   ├── config.py       # settings (DB_URL, JWT_SECRET) desde .env
 │   │   │   ├── database.py     # engine + SessionLocal + Base
 │   │   │   └── security.py     # hash de contraseñas + crear/verificar JWT
-│   │   ├── models/             # SQLAlchemy: user, role, period,
-│   │   │                       # form_template, question, evaluation, answer
+│   │   ├── models/             # SQLAlchemy: user, role, area, period, form_template,
+│   │   │                       # question, evaluation, answer, tutor_feedback_log, ai_feedback_cache
 │   │   ├── schemas/            # Pydantic: request/response por dominio
 │   │   ├── repositories/       # acceso a datos (queries reutilizables)
-│   │   ├── services/           # LÓGICA DE NEGOCIO por dominio
-│   │   ├── routers/            # auth, users, forms, evaluations, metrics
+│   │   ├── services/           # LÓGICA DE NEGOCIO: metrics_service (ICA),
+│   │   │                       # talent_service, ai_service, evaluation_service
+│   │   ├── routers/            # auth, users, areas, forms, evaluations,
+│   │   │                       # tutor_logs, metrics, talent
 │   │   └── deps.py             # get_db, get_current_user, require_role
 │   ├── tests/                  # pytest
 │   ├── requirements.txt
@@ -105,11 +111,13 @@ riwi-lead-trace/
 ```js
 export const routes = [
   { path: '/login',        view: 'login',           public: true },
-  { path: '/',             view: 'home',            roles: ['coder','team_leader','tutor','coordinador'] },
+  { path: '/',             view: 'home',            roles: ['coder','team_leader','tutor','admin'] },
   { path: '/evaluables',   view: 'evaluables',      roles: ['coder'] },
   { path: '/evaluar/:id',  view: 'evaluation-form', roles: ['coder'] },
-  { path: '/historial',    view: 'history',         roles: ['coder','coordinador'] },
-  { path: '/dashboard',    view: 'dashboard',       roles: ['coordinador'] },
+  { path: '/historial',    view: 'history',         roles: ['coder','admin'] },
+  { path: '/bitacora',     view: 'tutor-log',       roles: ['team_leader'] },   // TL→Tutor
+  { path: '/dashboard',    view: 'dashboard',       roles: ['admin'] },         // ICA + IA por área
+  { path: '/talento',      view: 'talent',          roles: ['admin'] },
   { path: '*',             view: 'not-found',       public: true },
 ];
 ```
@@ -146,10 +154,39 @@ def require_role(*roles):
 
 # app/routers/metrics.py
 @router.get("/metrics/summary")
-def summary(period_id: int, user = Depends(require_role("coordinador")),
-            db = Depends(get_db)):
-    return metrics_service.build_summary(db, period_id)
+def summary(period_id: int, area_id: int | None = None,
+            user = Depends(require_role("admin")), db = Depends(get_db)):
+    return metrics_service.build_summary(db, period_id, area_id)
 ```
+
+## Lógica de negocio destacada (ICA · IA · talento)
+
+Toda esta lógica vive en `services/` (no en routers ni queries dispersas). Es la parte "no CRUD".
+
+### Índice de Calidad de Acompañamiento (ICA) — `metrics_service`
+Por cada `(evaluatee_id, area_id, period_id)`, solo con evaluaciones `submitted`:
+1. `A_c` = promedio por categoría (`AVG(score)` de preguntas `scale`, escala 1–5).
+2. Base ponderada `B = Σ(w_c · A_c) / Σ(w_c)` con pesos `w_c` por categoría (constante de config).
+3. Normaliza `score = round((B − 1) / 4 × 100)` → 0–100.
+4. **Confianza** según `n` (respuestas) y participación: `Datos insuficientes` si `n < N_MIN`.
+5. **Tendencia** `Δ = score_actual − score_periodo_anterior`.
+6. **Estado:** `En riesgo` (`score < 60` o `Δ ≤ −10`), `Sólido` (`≥80` y `Δ≥0`), `Estable` o
+   `Datos insuficientes`. Umbrales y pesos son constantes documentadas (sustentables).
+
+> El ICA **no se persiste**: se calcula on-read. `repositories/` solo provee los agregados.
+
+### Resumen por IA — `ai_service`
+- Construye un prompt con **agregados anonimizados** (promedios por categoría, conteos, comentarios
+  sin autor, notas de la bitácora) y llama a **Claude API** (SDK `anthropic`).
+- Modelo: `claude-sonnet-4-6` (calidad) o `claude-haiku-4-5-20251001` (económico). Clave en
+  `core/config.py` (`ANTHROPIC_API_KEY`).
+- **Privacidad:** nunca se envían identidades ni `evaluator_id`. El texto resultante se guarda en
+  `ai_feedback_cache` (`UNIQUE(evaluatee_id, area_id, period_id)`) para no re-llamar al modelo.
+
+### Analítica de talento — `talent_service`
+- **Talent Score** (0–100) por **tutor**: combina su ICA como tutor + consistencia entre periodos
+  + volumen/cobertura de tutorías (bitácora) + tendencia. Ranking de "preparación para TL" por área.
+- Fórmula transparente (constantes documentadas), derivada y no persistida.
 
 ## Comunicación con la API
 
@@ -160,12 +197,16 @@ def summary(period_id: int, user = Depends(require_role("coordinador")),
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | POST | `/auth/login` | Autenticación → `{ token, user }` |
-| GET | `/users?role=team_leader` | Evaluables por rol |
-| GET | `/forms?target_role=team_leader` | Plantilla de formulario por rol |
-| POST | `/evaluations` | Registrar evaluación (con reglas de negocio) |
+| GET | `/areas` | Catálogo de áreas (Desarrollo/Inglés/HSE/BLS) |
+| GET | `/users?role=team_leader&area_id=:a` | Evaluables por rol y área |
+| GET | `/forms?target_role=team_leader&area_id=:a` | Plantilla de formulario por rol y área |
+| POST | `/evaluations` | Registrar evaluación (anonimato + no-duplicado por periodo/área) |
 | GET | `/evaluations?evaluator_id=:id` | Historial del Coder |
 | GET | `/evaluations?evaluatee_id=:id` | Histórico por evaluado (respeta anonimato) |
-| GET | `/metrics/summary?period_id=:p` | KPIs agregados del dashboard |
+| POST/GET | `/tutor-logs` | Bitácora TL→Tutor (solo el TL autor) |
+| GET | `/metrics/summary?period_id=:p&area_id=:a` | KPIs + **ICA** por área |
+| GET | `/metrics/ai-summary?evaluatee_id=:e&period_id=:p` | Resumen IA (Claude, anonimizado) — admin |
+| GET | `/talent/candidates?area_id=:a&period_id=:p` | Ranking de futuros TL — admin |
 
 > FastAPI expone documentación interactiva automática en `/docs` (Swagger) y `/redoc`, útil para pruebas y sustentación.
 

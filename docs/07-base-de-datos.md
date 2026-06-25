@@ -15,15 +15,18 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 
 | Entidad | Descripción |
 |---------|-------------|
-| `roles` | Catálogo de roles del sistema (coder, team_leader, tutor, coordinador) |
+| `roles` | Catálogo de roles del sistema (coder, tutor, team_leader, admin) |
+| `areas` | Áreas/departamentos de Riwi (Desarrollo, Inglés, HSE, BLS) |
 | `cohortes` | Cohortes de Riwi (p.ej. cohorte 5); agrupan clanes |
 | `clanes` | Clanes dentro de una cohorte; a ellos pertenecen los Coders |
-| `users` | Usuarios de la plataforma; cada uno tiene un rol y (si es Coder) un clan |
+| `users` | Usuarios de la plataforma; cada uno tiene un rol y (según el rol) un clan y/o un área |
 | `periods` | Periodos/ciclos de evaluación (p.ej. trimestre, cohorte) |
-| `form_templates` | Plantilla de formulario según el rol evaluado (TL / Tutor) |
+| `form_templates` | Plantilla de formulario según el rol evaluado (TL / Tutor) y el área |
 | `questions` | Preguntas/criterios que componen una plantilla |
-| `evaluations` | Una evaluación de un evaluador hacia un evaluado en un periodo |
+| `evaluations` | Una evaluación de un evaluador hacia un evaluado, en un periodo y un área |
 | `evaluation_answers` | Respuestas (puntaje + comentario) por pregunta de una evaluación |
+| `tutor_feedback_log` | Bitácora continua TL→Tutor (una nota por tutoría); visible solo al TL autor |
+| `ai_feedback_cache` | Cache de resúmenes generados por IA (Claude API) para el Admin |
 
 ## Atributos principales
 
@@ -31,7 +34,13 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 | Atributo | Tipo | Notas |
 |----------|------|-------|
 | id | INT PK | |
-| name | VARCHAR(30) | único: coder, team_leader, tutor, coordinador |
+| name | VARCHAR(30) | único: coder, tutor, team_leader, admin |
+
+### `areas`
+| Atributo | Tipo | Notas |
+|----------|------|-------|
+| id | INT PK | |
+| name | VARCHAR(60) | único: Desarrollo, Inglés, HSE, BLS |
 
 ### `cohortes`
 | Atributo | Tipo | Notas |
@@ -57,8 +66,9 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 | full_name | VARCHAR(120) | |
 | email | VARCHAR(150) | único |
 | password_hash | VARCHAR(255) | nunca texto plano |
-| role_id | INT FK → roles.id | |
-| clan_id | INT FK → clanes.id (NULLABLE) | clan del Coder (un tutor sigue siendo coder → conserva su clan); NULL para team_leader/coordinador |
+| role_id | INT FK → roles.id | coder / tutor / team_leader / admin |
+| clan_id | INT FK → clanes.id (NULLABLE) | clan de coders y tutores; NULL para team_leader/admin |
+| area_id | INT FK → areas.id (NULLABLE) | área de team_leader y tutor (Desarrollo/Inglés/HSE/BLS); NULL para coder/admin |
 | is_active | BOOLEAN | default true |
 | created_at | TIMESTAMP | |
 
@@ -77,6 +87,7 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 | id | INT PK | |
 | title | VARCHAR(120) | |
 | target_role_id | INT FK → roles.id | rol que se evalúa (team_leader/tutor) |
+| area_id | INT FK → areas.id (NULLABLE) | área de la plantilla (NULL = genérica para todas) |
 | is_active | BOOLEAN | |
 
 ### `questions`
@@ -97,6 +108,7 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 | evaluatee_id | INT FK → users.id | persona evaluada |
 | template_id | INT FK → form_templates.id | |
 | period_id | INT FK → periods.id | |
+| area_id | INT FK → areas.id | área en la que se evalúa (segmenta el ICA) |
 | is_anonymous | BOOLEAN | default false |
 | status | VARCHAR(20) | 'draft' \| 'submitted' |
 | submitted_at | TIMESTAMP NULL | |
@@ -111,18 +123,52 @@ Justificación ampliada en [`12-justificacion-tecnologica.md`](./12-justificacio
 | score | SMALLINT NULL | 1–5 si input_type='scale' |
 | comment | TEXT NULL | si input_type='text' |
 
+### `tutor_feedback_log`
+Bitácora continua del Team Leader sobre un Tutor (una nota por tutoría). **Visible solo al TL autor**
+(regla de negocio en `services`); alimenta el ICA del tutor y el resumen IA del Admin.
+
+| Atributo | Tipo | Notas |
+|----------|------|-------|
+| id | INT PK | |
+| tl_id | INT FK → users.id | Team Leader autor (rol team_leader) |
+| tutor_id | INT FK → users.id | Tutor evaluado (rol tutor) |
+| area_id | INT FK → areas.id | área de la tutoría |
+| comment | TEXT | nota cualitativa de la tutoría |
+| score | SMALLINT NULL | valoración rápida opcional (1–5) |
+| created_at | TIMESTAMP | fecha de la tutoría/registro |
+
+### `ai_feedback_cache`
+Cache de los resúmenes generados por IA (Claude API) para no re-llamar al modelo y controlar costo.
+No es dato relacional duplicado, sino el **resultado materializado de un servicio externo** (ver 3FN).
+
+| Atributo | Tipo | Notas |
+|----------|------|-------|
+| id | INT PK | |
+| evaluatee_id | INT FK → users.id | persona resumida |
+| area_id | INT FK → areas.id (NULLABLE) | área del resumen (NULL = global) |
+| period_id | INT FK → periods.id | periodo del resumen |
+| summary | TEXT | texto generado por el modelo |
+| model | VARCHAR(40) | modelo usado (p.ej. claude-sonnet-4-6) |
+| generated_at | TIMESTAMP | cuándo se generó |
+| | | **UNIQUE(evaluatee_id, area_id, period_id)** |
+
 ## Relaciones
 
 - `roles` 1—N `users`
+- `areas` 1—N `users` *(área de team_leader/tutor; FK nullable para coder/admin)*
 - `cohortes` 1—N `clanes`
-- `clanes` 1—N `users` *(un Coder/Tutor pertenece a un clan; FK nullable para team_leader/coordinador)*
+- `clanes` 1—N `users` *(un Coder/Tutor pertenece a un clan; FK nullable para team_leader/admin)*
 - `roles` 1—N `form_templates` (rol evaluado)
+- `areas` 1—N `form_templates` *(plantilla por área; FK nullable = genérica)*
 - `form_templates` 1—N `questions`
 - `users` (evaluador) 1—N `evaluations` *(opcional: NULL en anónimas)*
 - `users` (evaluado) 1—N `evaluations`
 - `periods` 1—N `evaluations`
+- `areas` 1—N `evaluations` *(área evaluada)*
 - `evaluations` 1—N `evaluation_answers`
 - `questions` 1—N `evaluation_answers`
+- `users` (TL) 1—N `tutor_feedback_log` · `users` (tutor) 1—N `tutor_feedback_log` · `areas` 1—N `tutor_feedback_log`
+- `users` (evaluado) 1—N `ai_feedback_cache` · `periods` 1—N `ai_feedback_cache` · `areas` 1—N `ai_feedback_cache`
 
 ## Modelo Entidad-Relación (texto)
 
@@ -159,16 +205,21 @@ Cardinalidades clave:
 ## Modelo relacional (resumen)
 
 ```
-roles(id, name)
+roles(id, name)                                   -- coder, tutor, team_leader, admin
+areas(id, name)                                   -- Desarrollo, Inglés, HSE, BLS
 cohortes(id, numero, nombre, ciudad)
 clanes(id, cohorte_id→cohortes, numero, nombre)   -- UNIQUE(cohorte_id, numero)
-users(id, full_name, email, password_hash, role_id→roles, clan_id→clanes?, is_active, created_at)
+users(id, full_name, email, password_hash, role_id→roles, clan_id→clanes?, area_id→areas?,
+      is_active, created_at)
 periods(id, name, starts_at, ends_at, is_active)
-form_templates(id, title, target_role_id→roles, is_active)
+form_templates(id, title, target_role_id→roles, area_id→areas?, is_active)
 questions(id, template_id→form_templates, text, category, input_type, sort_order)
 evaluations(id, evaluator_id→users?, evaluatee_id→users, template_id→form_templates,
-            period_id→periods, is_anonymous, status, submitted_at, created_at)
+            period_id→periods, area_id→areas, is_anonymous, status, submitted_at, created_at)
 evaluation_answers(id, evaluation_id→evaluations, question_id→questions, score, comment)
+tutor_feedback_log(id, tl_id→users, tutor_id→users, area_id→areas, comment, score?, created_at)
+ai_feedback_cache(id, evaluatee_id→users, area_id→areas?, period_id→periods, summary, model,
+                  generated_at)                   -- UNIQUE(evaluatee_id, area_id, period_id)
 ```
 
 ## Decisiones de diseño
@@ -176,16 +227,21 @@ evaluation_answers(id, evaluation_id→evaluations, question_id→questions, sco
 - **Anonimato:** se modela con `is_anonymous` + `evaluator_id` NULLABLE. Si la evaluación es anónima, no se persiste el evaluador → anonimato real a nivel de datos.
 - **Plantillas dinámicas:** `form_templates` + `questions` permiten cambiar criterios sin tocar código (preparado para futuro CRUD de formularios, fuera del MVP).
 - **Una respuesta por pregunta** vía `evaluation_answers` (normalizado), facilitando métricas por criterio/categoría.
-- **Integridad de unicidad** (recomendada en backend): un evaluador no debería evaluar dos veces al mismo evaluado en el mismo periodo → índice único parcial sobre `(evaluator_id, evaluatee_id, period_id)` cuando no es anónima.
+- **Integridad de unicidad** (recomendada en backend): un evaluador no debería evaluar dos veces al mismo evaluado en el mismo periodo y área → índice único parcial sobre `(evaluator_id, evaluatee_id, period_id, area_id)` cuando no es anónima.
+- **Roles (4) y áreas:** `roles` = coder, tutor, team_leader, admin (`admin` antes `coordinador`). **`tutor` es un rol de cuenta de pleno derecho** (no una bandera sobre coder): conserva `clan_id` y tiene `area_id`. `areas` (Desarrollo/Inglés/HSE/BLS) es una **dimensión transversal**: el TL/Tutor pertenece a un área y cada evaluación lleva su `area_id`, de modo que el ICA se calcula **por área**.
+- **Métricas derivadas, no persistidas:** el **ICA** (índice 0–100), el **Talent Score** y la **participación** se calculan **on-read** en `services` desde `evaluation_answers`; no se guardan como columnas (evita redundancia/inconsistencia). El `ai_feedback_cache` es la **única** excepción: materializa el resultado costoso de un servicio externo (Claude API), con `UNIQUE(evaluatee_id, area_id, period_id)` para reutilizarlo.
+- **Bitácora TL→Tutor (`tutor_feedback_log`):** registro continuo (una nota por tutoría). La regla "solo el TL autor la ve" se aplica en `services` (`tl_id == current_user`), no a nivel de schema.
+- **Privacidad de IA:** al modelo solo se envían agregados/comentarios **anonimizados**; nunca `evaluator_id`. El cache guarda el texto resultante, no las identidades de origen.
 - **Cohortes y clanes:** un Coder pertenece a **un** clan (`users.clan_id`, relación 1—N), y cada clan vive dentro de **una** cohorte (`clanes.cohorte_id`). El número de clan es único **dentro** de su cohorte → `UNIQUE(cohorte_id, numero)`: el "clan 10" puede existir en la cohorte 5 y también en otra cohorte/ciudad como filas distintas, pero no dos veces en la misma cohorte.
 - **No guardamos `cohorte_id` en `users`:** la cohorte de un Coder se obtiene siguiendo `users.clan_id → clanes.cohorte_id` (un JOIN). Duplicar la cohorte en `users` sería una **dependencia transitiva** (rompe 3FN) y permitiría inconsistencias (un user con clan de la cohorte 5 pero `cohorte_id` = 3).
-- **`clan_id` es NULLABLE:** lo usan Coders (y Tutores, que siguen siendo Coders); queda NULL para team_leaders y coordinador.
+- **`clan_id` es NULLABLE:** lo usan Coders y Tutores; queda NULL para team_leaders y admin.
+- **`area_id` es NULLABLE:** lo usan team_leaders y tutores (su área); NULL para coders (su área se toma por evaluación) y admin (acceso global).
 
 ## Cumplimiento de la Tercera Forma Normal (3FN)
 
 - **1FN:** todos los atributos son atómicos; no hay grupos repetidos (las respuestas se modelan en su propia tabla `evaluation_answers`, no como columnas múltiples).
 - **2FN:** sin dependencias parciales; cada tabla tiene PK simple (`id`) y los atributos dependen de ella por completo.
-- **3FN:** sin dependencias transitivas; p.ej. el nombre del rol vive en `roles` (no se repite en `users`), y los criterios viven en `questions` (no se duplican en cada respuesta). Igualmente, la **cohorte de un Coder no se almacena en `users`**: depende del clan (`clan_id → clanes.cohorte_id`), así que guardarla sería transitiva; se deriva por JOIN.
+- **3FN:** sin dependencias transitivas; p.ej. el nombre del rol vive en `roles` (no se repite en `users`), el del área en `areas`, y los criterios en `questions`. La **cohorte de un Coder no se almacena en `users`**: depende del clan (`clan_id → clanes.cohorte_id`), así que guardarla sería transitiva; se deriva por JOIN. El **ICA y el Talent Score tampoco se persisten**: son funciones de las respuestas y se calculan on-read (persistirlos sería redundancia derivada).
 
 ## Operaciones CRUD (cobertura MVP)
 
@@ -196,8 +252,13 @@ evaluation_answers(id, evaluation_id→evaluations, question_id→questions, sco
 | evaluation_answers | con la evaluación | en detalle/métricas | en borrador | cascada con evaluación |
 | form_templates / questions | seed | render de formularios | (admin, futuro) | (admin, futuro) |
 | periods | seed/admin | filtros | activar/cerrar | — |
+| areas | seed | catálogo, filtros | (admin, futuro) | — |
+| tutor_feedback_log | TL (POST) | bitácora del TL autor | nota propia | nota propia |
+| ai_feedback_cache | servicio IA | resumen del Admin | regenerar | invalidar |
 
-> La lógica de negocio (anonimato, no-duplicado, agregaciones) se implementa en la capa `services` del backend sobre estas operaciones; **no es CRUD plano**.
+> La lógica de negocio (anonimato, no-duplicado por periodo/área, **ICA**, **talento**, resumen IA,
+> visibilidad de la bitácora) se implementa en la capa `services` del backend sobre estas
+> operaciones; **no es CRUD plano**.
 
 ## Ampliación futura (fuera del MVP)
 

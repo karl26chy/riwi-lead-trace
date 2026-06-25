@@ -1,12 +1,12 @@
 # Riwi LeadTrace
 
-> MVP de **feedback ascendente** para el **Proyecto Integrador — CodeUp Riwi: Beyond Limits (Ruta Básica)**. Aplicación web full-stack que permite a los Coders evaluar a Team Leaders y Tutores mediante formularios estructurados, generando trazabilidad, métricas y tendencias sobre la calidad del acompañamiento académico.
+> MVP de **evaluación 360° multi-área** para el **Proyecto Integrador — CodeUp Riwi: Beyond Limits (Ruta Básica)**. Aplicación web full-stack: los Coders evalúan a Team Leaders y Tutores (con opción anónima) y los TL llevan una bitácora continua de sus Tutores, todo por **área** (Desarrollo, Inglés, HSE, BLS). Calcula un **Índice de Calidad de Acompañamiento (ICA)**, una **analítica de talento** y **resúmenes con IA (Claude)** para el Admin (Jefe de TL/tutores).
 
 ## 📌 ¿Qué es?
 
 Hoy los Team Leaders evalúan a los Coders, pero **no existe un mecanismo formal para que los Coders evalúen a sus líderes y tutores**. Riwi LeadTrace cierra ese ciclo: habilita feedback bidireccional (con opción anónima), identifica fortalezas y debilidades del acompañamiento, y entrega métricas accionables a los responsables académicos.
 
-No es un CRUD básico: incorpora **lógica de negocio** real (reglas de anonimato, prevención de evaluaciones duplicadas, cálculo de métricas agregadas por criterio, participación y tendencias, y control de acceso por rol).
+No es un CRUD básico: incorpora **lógica de negocio** real (reglas de anonimato, prevención de evaluaciones duplicadas por periodo/área, **ICA** —índice ponderado por criterio con confianza, tendencia y estado—, **analítica de talento**, resúmenes con IA anonimizados y control de acceso por rol).
 
 ## 👥 Equipo (5 integrantes)
 
@@ -103,4 +103,6 @@ Ver [`docs/11-entregables-y-evaluacion.md`](./docs/11-entregables-y-evaluacion.m
 
 ## 👤 Roles del sistema (usuarios)
 
-`Coder` · `Team Leader` · `Tutor` · `Coordinador / Responsable Académico`
+`Coder` · `Tutor` · `Team Leader` · `Admin (Jefe de TL / tutores)`
+
+Dimensión transversal de **área**: Desarrollo · Inglés · HSE · BLS.

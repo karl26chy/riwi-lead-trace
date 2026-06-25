@@ -11,6 +11,7 @@ La rúbrica exige justificar las decisiones técnicas. Aquí se sustenta cada el
 | Backend | **Python + FastAPI** | Flask, Express.js | Python alineado a la Ruta Básica + validación y docs integradas |
 | Base de datos | **MySQL** | PostgreSQL, MongoDB | Datos relacionales, integridad, consultas agregadas |
 | Auth | **JWT** | sesiones server-side | Sin estado, encaja con SPA + API REST |
+| IA (resúmenes) | **Claude API** (`anthropic`) | otros LLM, sin IA | Calidad de redacción de coaching + privacidad por diseño (solo agregados anónimos) |
 
 ## Backend: ¿por qué FastAPI?
 
@@ -46,6 +47,22 @@ La rúbrica exige justificar las decisiones técnicas. Aquí se sustenta cada el
 - Permite **RBAC** simple (rol embebido/derivado del usuario) verificado en el backend.
 - Contraseñas siempre **hasheadas** (passlib/bcrypt); el token se firma con `JWT_SECRET` desde `.env`.
 
+## IA: ¿por qué Claude API (y qué modelo)?
+
+- **Caso de uso:** resumir, en lenguaje natural para el **Admin (Jefe de TL/tutores)**, el feedback
+  agregado por persona/área/periodo (fortalezas, riesgos, recomendación de acompañamiento). Es
+  generación de texto, donde un LLM aporta valor real frente a una plantilla fija.
+- **Modelo recomendado:** `claude-sonnet-4-6` por su balance calidad/costo para redacción de
+  coaching; alternativa económica para resúmenes masivos: `claude-haiku-4-5-20251001`. Se accede
+  vía el SDK `anthropic` desde `services/ai_service.py`, con `ANTHROPIC_API_KEY` en `core/config.py`.
+- **Privacidad por diseño (regla de negocio):** al modelo solo se envían **agregados anonimizados**
+  (promedios, conteos, comentarios sin autor). **Nunca** `evaluator_id` ni datos que revelen
+  identidad → el anonimato se preserva aun usando un servicio externo.
+- **Control de costo:** los resúmenes se **cachean** en `ai_feedback_cache`
+  (`UNIQUE(evaluatee_id, area_id, period_id)`) para no re-llamar al modelo.
+- **Sustentación:** es un diferenciador del producto sin romper las restricciones del proyecto
+  (la IA complementa la **lógica de negocio propia** —ICA, talento— que es lo evaluado por la rúbrica).
+
 ## Decisiones que evitan sobreingeniería
 
 - Sin frameworks de frontend ni capa de estado externa (store propio mínimo).
@@ -62,5 +79,5 @@ La rúbrica exige justificar las decisiones técnicas. Aquí se sustenta cada el
 | Manejo de errores | HTTPException + handlers + toasts |
 | Gestión de rutas | Routers FastAPI + router SPA |
 | Modelo 3FN, relaciones, CRUD, consultas | Ver 07 + schema.sql |
-| Lógica de negocio (no solo CRUD) | Anonimato, no-duplicado, métricas, RBAC |
+| Lógica de negocio (no solo CRUD) | Anonimato, no-duplicado por periodo/área, **ICA**, **talento**, RBAC, resumen IA |
 | Justificación tecnológica | Este documento |

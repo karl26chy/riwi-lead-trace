@@ -2,7 +2,7 @@
 
 ## Product Vision
 
-> **Para** los Coders del ecosistema Riwi **que** no cuentan con un canal formal para evaluar la calidad del acompañamiento que reciben, **Riwi LeadTrace es** una plataforma web de feedback ascendente **que** permite evaluar de forma estructurada —y opcionalmente anónima— a Team Leaders y Tutores, **a diferencia de** los procesos informales o unidireccionales actuales, **nuestro producto** genera trazabilidad, métricas y tendencias que impulsan la mejora continua del acompañamiento académico.
+> **Para** el ecosistema Riwi **que** no cuenta con un canal formal y multidimensional para evaluar la calidad del acompañamiento, **Riwi LeadTrace es** una plataforma web de **evaluación 360° multi-área** (Desarrollo, Inglés, HSE, BLS) **que** permite a los Coders evaluar —de forma estructurada y opcionalmente anónima— a Team Leaders y Tutores, y a los Team Leaders llevar una **bitácora continua** de sus Tutores, **a diferencia de** los procesos informales o unidireccionales actuales, **nuestro producto** calcula un **Índice de Calidad de Acompañamiento (ICA)** por área, una **analítica de talento** (quién está listo para ser TL) y **resúmenes con IA** que impulsan decisiones del Admin (Jefe de TL/tutores).
 
 ## Product Goal
 
@@ -10,11 +10,12 @@ Validar, mediante un MVP funcional, que un proceso de **feedback bidireccional e
 
 ## Objetivos de negocio
 
-1. **Generar feedback ascendente** formal de Coders hacia Team Leaders y Tutores.
-2. **Mejorar la calidad del acompañamiento** identificando fortalezas y debilidades.
-3. **Crear trazabilidad y métricas** de seguimiento histórico por líder y por periodo.
-4. **Habilitar decisiones basadas en datos** para coordinadores y responsables académicos.
-5. **Fomentar la mejora continua** dentro del ecosistema de aprendizaje de Riwi.
+1. **Generar feedback 360°** formal: Coders → TL/Tutores, y TL → Tutores (bitácora continua).
+2. **Mejorar la calidad del acompañamiento** por **área** (Desarrollo/Inglés/HSE/BLS), con el **ICA**.
+3. **Crear trazabilidad y métricas** de seguimiento histórico por líder, tutor, área y periodo.
+4. **Habilitar decisiones basadas en datos** para el Admin (Jefe de TL/tutores), apoyadas en **IA**.
+5. **Detectar talento**: identificar tutores/coders con alta probabilidad de ser contratados como TL.
+6. **Fomentar la mejora continua** dentro del ecosistema de aprendizaje de Riwi.
 
 ## Métricas de éxito del MVP
 
@@ -24,7 +25,8 @@ Validar, mediante un MVP funcional, que un proceso de **feedback bidireccional e
 | Cobertura | % de Team Leaders/Tutores con al menos 3 evaluaciones | ≥ 70 % |
 | Completitud | % de evaluaciones iniciadas que se envían | ≥ 80 % |
 | Calidad del dato | % de evaluaciones con comentario cualitativo | ≥ 40 % |
-| Uso analítico | Nº de coordinadores que consultan el dashboard semanalmente | ≥ 1 por programa |
+| Calidad accionable | % de TL/Tutores con **ICA** calculado (datos suficientes) por área | ≥ 70 % |
+| Uso analítico | Nº de admins (Jefe de TL) que consultan el dashboard semanalmente | ≥ 1 por programa |
 | Confianza | % de evaluaciones enviadas usando la opción anónima (señal de seguridad percibida) | medición base |
 | Satisfacción | NPS interno del proceso de feedback | establecer línea base |
 
@@ -33,9 +35,10 @@ Validar, mediante un MVP funcional, que un proceso de **feedback bidireccional e
 ## Propuesta de valor
 
 - **Para el Coder:** voz formal y segura sobre su experiencia de acompañamiento.
-- **Para el Team Leader / Tutor:** feedback concreto para crecer profesionalmente.
-- **Para el Coordinador:** panel con métricas, tendencias y trazabilidad para decidir.
-- **Para Riwi:** mejora medible y continua de la calidad académica.
+- **Para el Team Leader:** feedback concreto para crecer + herramienta para acompañar a sus Tutores.
+- **Para el Tutor:** feedback para mejorar y un camino visible hacia ser TL (analítica de talento).
+- **Para el Admin (Jefe de TL/tutores):** panel con **ICA** por área, tendencias, **resúmenes IA** y ranking de talento para decidir.
+- **Para Riwi:** mejora medible y continua de la calidad académica y mejor pipeline de talento.
 
 ## Supuestos y restricciones
 

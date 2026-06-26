@@ -7,32 +7,44 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Descripción del error
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Proporcione una descripción clara y concisa del error.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Pasos para reproducirlo
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+Pasos para reproducir el comportamiento:
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+1. Vaya a "..."
+2. Haga clic en "..."
+3. Desplácese hasta "..."
+4. Observe el error.
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## Comportamiento esperado
 
-**Additional context**
-Add any other context about the problem here.
+Describa de forma clara y concisa cuál era el comportamiento esperado.
+
+## Capturas de pantalla
+
+Si corresponde, agregue capturas de pantalla para ayudar a explicar el problema.
+
+## Equipo de escritorio
+
+Complete la siguiente información:
+
+- **Sistema operativo:** (por ejemplo, Windows 11, macOS, Ubuntu)
+- **Navegador:** (por ejemplo, Chrome, Firefox, Safari, Edge)
+- **Versión:** (por ejemplo, 22)
+
+## Dispositivo móvil
+
+Complete la siguiente información:
+
+- **Dispositivo:** (por ejemplo, iPhone 6, Samsung Galaxy S23)
+- **Sistema operativo:** (por ejemplo, iOS 18, Android 15)
+- **Navegador:** (por ejemplo, Safari, Chrome)
+- **Versión:** (por ejemplo, 22)
+
+## Contexto adicional
+
+Agregue cualquier otra información relevante sobre el problema aquí.

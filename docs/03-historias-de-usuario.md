@@ -1,303 +1,212 @@
 # 03 — Historias de Usuario
 
 Formato: **Como** [rol] / **Quiero** [funcionalidad] / **Para** [beneficio].
-Cada historia incluye criterios de aceptación (CA), prioridad y Story Points.
+Cada historia incluye criterios de aceptacion (CA), prioridad y Story Points.
 
 ---
 
-## ÉPICA CORE
+## CORE
 
 ### CORE-01 — Setup repo + scaffold SPA · `Must` · `5 SP`
-**Como** developer **quiero** una base de proyecto SPA modular con router, store y cliente HTTP **para** construir las funcionalidades de forma ordenada y rápida.
+**Como** developer **quiero** una base de proyecto SPA modular con router, store y cliente HTTP **para** construir las funcionalidades de forma ordenada y rapida.
 
-**Criterios de aceptación**
-- [ ] Monorepo con `frontend/` y `backend/` según [`06-arquitectura.md`](./06-arquitectura.md).
+**Criterios de aceptacion**
+- [ ] Monorepo con `frontend/` y `backend/` segun [`06-arquitectura.md`](./06-arquitectura.md).
 - [ ] El frontend arranca con `npm run dev` y muestra una vista inicial.
-- [ ] Existe un router cliente que cambia de vista sin recargar la página.
-- [ ] Hay un módulo `store` (estado) y un módulo `http` (fetch) reutilizables.
+- [ ] Existe un router cliente que cambia de vista sin recargar la pagina.
+- [ ] Hay un modulo `store` (estado) y un modulo `http` (fetch) reutilizables.
 
 ### CORE-02 — Scaffold backend (FastAPI) + BD · `Must` · `5 SP`
-**Como** developer **quiero** un backend FastAPI por capas conectado a MySQL **para** exponer la API REST que consumirá la SPA.
+**Como** developer **quiero** un backend FastAPI por capas conectado a MySQL **para** exponer la API REST que consumira la SPA.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] `uvicorn app.main:app --reload` levanta la API y expone `/docs` (Swagger).
 - [ ] Estructura por capas: `routers/`, `services/`, `repositories/`, `models/`, `schemas/`, `deps.py`.
-- [ ] Conexión a MySQL configurable por `.env`; la BD se crea con `database/schema.sql` (seed incluido).
+- [ ] Conexion a MySQL configurable por `.env`; la BD se crea con `database/schema.sql` (seed incluido).
 - [ ] Endpoint de salud (`GET /health`) responde `200`.
 - [ ] CORS habilitado para el origen del frontend.
 
-### CORE-03 — Layout y navegación responsive · `Must` · `5 SP`
-**Como** usuario **quiero** una interfaz con navegación clara y adaptable **para** usar la plataforma cómodamente desde móvil o escritorio.
+### CORE-03 — Layout y navegacion responsive · `Must` · `5 SP`
+**Como** usuario **quiero** una interfaz con navegacion clara y adaptable **para** usar la plataforma comodamente desde movil o escritorio.
 
-**Criterios de aceptación**
-- [ ] Header con navegación que cambia según el rol autenticado.
-- [ ] Layout mobile-first; se adapta a ≥320px, tablet y escritorio.
-- [ ] La vista activa se resalta en la navegación.
-- [ ] Estados de carga y vacío con un componente común.
+**Criterios de aceptacion**
+- [ ] Header con navegacion que cambia segun el rol autenticado.
+- [ ] Layout mobile-first; se adapta a >=320px, tablet y escritorio.
+- [ ] La vista activa se resalta en la navegacion.
+- [ ] Estados de carga y vacio con un componente comun.
 
 ---
 
-## ÉPICA AUTH
+## AUTH
 
-### AUTH-01 — Inicio de sesión · `Must` · `3 SP`
-**Como** usuario registrado **quiero** iniciar sesión con mis credenciales **para** acceder a la plataforma de forma segura.
+### AUTH-01 — Inicio de sesion · `Must` · `3 SP`
+**Como** usuario registrado **quiero** iniciar sesion con mis credenciales **para** acceder a la plataforma de forma segura.
 
-**Criterios de aceptación**
-- [ ] Formulario con email y contraseña validados en cliente.
-- [ ] `POST /auth/login` verifica la contraseña con **hash** (passlib/bcrypt) y emite un **JWT**.
-- [ ] Mensaje de error claro ante credenciales inválidas (`401`).
-- [ ] Al autenticar, se redirige a la vista inicial según el rol.
-- [ ] Botón deshabilitado y feedback de carga durante la petición.
+**Criterios de aceptacion**
+- [ ] Formulario con email y contrasena validados en cliente.
+- [ ] `POST /auth/login` verifica la contrasena con **hash** (passlib/bcrypt) y emite un **JWT**.
+- [ ] Mensaje de error claro ante credenciales invalidas (`401`).
+- [ ] Al autenticar, se redirige a la vista inicial segun el rol.
+- [ ] Boton deshabilitado y feedback de carga durante la peticion.
 
-### AUTH-02 — Sesión y rutas protegidas · `Must` · `5 SP`
-**Como** usuario autenticado **quiero** mantener mi sesión y que las rutas privadas estén protegidas **para** no tener que reingresar y proteger mi información.
+### AUTH-02 — Sesion y rutas protegidas · `Must` · `5 SP`
+**Como** usuario autenticado **quiero** mantener mi sesion y que las rutas privadas esten protegidas **para** no tener que reingresar y proteger mi informacion.
 
-**Criterios de aceptación**
-- [ ] El token (JWT) se persiste en `localStorage` y se envía en cada petición.
+**Criterios de aceptacion**
+- [ ] El token (JWT) se persiste en `localStorage` y se envia en cada peticion.
 - [ ] El backend valida el token (`get_current_user`) y rechaza peticiones sin token o expirado (`401`).
-- [ ] Acceder a una ruta privada sin sesión redirige a login.
-- [ ] Existe acción de logout que limpia la sesión.
-- [ ] Si el token expira (401), se cierra sesión y se redirige a login.
+- [ ] Acceder a una ruta privada sin sesion redirige a login.
+- [ ] Existe accion de logout que limpia la sesion.
+- [ ] Si el token expira (401), se cierra sesion y se redirige a login.
 
-### AUTH-03 — Gestión de roles / autorización · `Must` · `3 SP`
-**Como** sistema **quiero** mostrar funcionalidades según el rol **para** que cada usuario vea solo lo que le corresponde.
+### AUTH-03 — Gestion de roles / autorizacion · `Must` · `3 SP`
+**Como** sistema **quiero** mostrar funcionalidades segun el rol **para** que cada usuario vea solo lo que le corresponde.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] El Coder ve evaluaciones e historial propio; no ve el dashboard.
-- [ ] El Team Leader ve su bitácora de tutores; el Tutor ve su feedback agregado.
-- [ ] El Admin ve dashboard, ICA, resúmenes IA, talento e histórico.
+- [ ] El Admin ve dashboard, ICA, resumenes IA e historico.
 - [ ] Las rutas no autorizadas redirigen o muestran "no autorizado" (front).
 - [ ] El backend aplica `require_role` y responde `403` ante accesos no autorizados (autoridad real).
-- [ ] La navegación se construye dinámicamente según los permisos del rol.
+- [ ] La navegacion se construye dinamicamente segun los permisos del rol.
 
 ---
 
-## ÉPICA EVAL
+## EVALUACIONES
 
 ### EVAL-01 — Listar evaluables · `Must` · `3 SP`
-**Como** Coder **quiero** ver la lista de Team Leaders y Tutores que puedo evaluar **para** elegir a quién dar feedback.
+**Como** Coder **quiero** ver la lista de Team Leaders y Tutores que puedo evaluar **para** elegir a quien dar feedback.
 
-**Criterios de aceptación**
-- [ ] Lista obtenida desde la API, filtrable por tipo (Team Leader / Tutor) y **área**.
-- [ ] Indica si ya evalué a esa persona en el periodo y área actual.
-- [ ] No me incluye a mí mismo (un tutor no se autoevalúa).
-- [ ] Estado vacío si no hay evaluables asignados.
+**Criterios de aceptacion**
+- [ ] Lista obtenida desde la API, filtrable por tipo (Team Leader / Tutor).
+- [ ] Indica si ya evalue a esa persona en el periodo actual.
+- [ ] No me incluye a mi mismo (un tutor no se autoevalua).
+- [ ] Estado vacio si no hay evaluables asignados.
 
 ### EVAL-02 — Evaluar Team Leader · `Must` · `5 SP`
-**Como** Coder **quiero** completar un formulario estructurado para evaluar a un Team Leader **para** retroalimentar su acompañamiento.
+**Como** Coder **quiero** completar un formulario estructurado para evaluar a un Team Leader **para** retroalimentar su acompanamiento.
 
-**Criterios de aceptación**
-- [ ] Formulario con criterios por categoría y escala (p.ej. 1–5) + comentario opcional.
-- [ ] Validación: no se envía incompleto; muestra errores por campo.
+**Criterios de aceptacion**
+- [ ] Formulario con criterios por categoria y escala (p.ej. 1-5) + comentario opcional.
+- [ ] Validacion: no se envia incompleto; muestra errores por campo.
 - [ ] Se puede guardar como borrador y retomar.
-- [ ] Confirmación visual al enviar.
+- [ ] Confirmacion visual al enviar.
 
 ### EVAL-03 — Evaluar Tutor · `Must` · `3 SP`
-**Como** Coder **quiero** evaluar a un Tutor con un formulario estructurado **para** retroalimentar su apoyo técnico.
+**Como** Coder **quiero** evaluar a un Tutor con un formulario estructurado **para** retroalimentar su apoyo tecnico.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] Reutiliza el motor de formularios de EVAL-02 con la plantilla de Tutor.
 - [ ] Criterios propios del rol Tutor cargados desde la API.
-- [ ] Mismas reglas de validación y confirmación.
+- [ ] Mismas reglas de validacion y confirmacion.
 
-### EVAL-04 — Feedback anónimo opcional · `Should` · `2 SP`
-**Como** Coder **quiero** poder enviar mi evaluación de forma anónima **para** dar feedback honesto sin temor.
+### EVAL-04 — Feedback anonimo opcional · `Should` · `2 SP`
+**Como** Coder **quiero** poder enviar mi evaluacion de forma anonima **para** dar feedback honesto sin temor.
 
-**Criterios de aceptación**
-- [ ] Toggle "Enviar de forma anónima" visible antes de enviar.
-- [ ] Si está activo, la evaluación se registra sin asociar la identidad del evaluador.
+**Criterios de aceptacion**
+- [ ] Toggle "Enviar de forma anonima" visible antes de enviar.
+- [ ] Si esta activo, la evaluacion se registra sin asociar la identidad del evaluador.
 - [ ] El sistema informa que el anonimato es irreversible una vez enviado.
 
-### EVAL-05 — Registrar evaluación (API) · `Must` · `5 SP`
-**Como** Coder **quiero** que mi evaluación se guarde de forma confiable **para** que cuente en las métricas.
+### EVAL-05 — Registrar evaluacion (API) · `Must` · `5 SP`
+**Como** Coder **quiero** que mi evaluacion se guarde de forma confiable **para** que cuente en las metricas.
 
-**Criterios de aceptación**
-- [ ] La evaluación se persiste vía `POST /evaluations` con validación Pydantic en servidor.
+**Criterios de aceptacion**
+- [ ] La evaluacion se persiste via `POST /evaluations` con validacion Pydantic en servidor.
 - [ ] Maneja estados: borrador y enviada.
-- [ ] **Regla de negocio:** rechaza (`409`) una segunda evaluación del mismo evaluado en el mismo **periodo y área**.
-- [ ] **Regla de negocio:** registra el `area_id` de la evaluación (segmenta el ICA).
+- [ ] **Regla de negocio:** rechaza (`409`) una segunda evaluacion del mismo evaluado en el mismo **periodo**.
 - [ ] Manejo de errores de red con reintento y mensaje claro.
 - [ ] Tras enviar, la persona evaluada aparece como "ya evaluada".
 
 ---
 
-## ÉPICA HIST
+## HISTORIAL
 
 ### HIST-01 — Historial del Coder · `Should` · `3 SP`
-**Como** Coder **quiero** consultar las evaluaciones que he enviado **para** llevar registro de mi participación.
+**Como** Coder **quiero** consultar las evaluaciones que he enviado **para** llevar registro de mi participacion.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] Lista de evaluaciones propias con fecha, evaluado y estado.
-- [ ] Detalle de cada evaluación enviada (no editable).
-- [ ] Las anónimas se muestran al propio autor pero marcadas como anónimas.
+- [ ] Detalle de cada evaluacion enviada (no editable).
+- [ ] Las anonimas se muestran al propio autor pero marcadas como anonimas.
 
-### HIST-02 — Seguimiento histórico · `Should` · `3 SP`
-**Como** Admin **quiero** consultar el histórico de evaluaciones por líder/tutor y periodo **para** dar seguimiento a su evolución.
+### HIST-02 — Seguimiento historico · `Should` · `3 SP`
+**Como** Admin **quiero** consultar el historico de evaluaciones por lider/tutor y periodo **para** dar seguimiento a su evolucion.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] Filtros por persona evaluada, rol y periodo.
-- [ ] Vista agregada que respeta el anonimato (sin exponer evaluadores anónimos).
-- [ ] Estado vacío y de carga.
+- [ ] Vista agregada que respeta el anonimato (sin exponer evaluadores anonimos).
+- [ ] Estado vacio y de carga.
 
 ---
 
-## ÉPICA DASH
+## DASHBOARD
 
 ### DASH-01 — Dashboard de resultados · `Must` · `5 SP`
-**Como** Admin **quiero** un panel con resultados agregados y el **ICA** por área **para** entender rápidamente la calidad del acompañamiento.
+**Como** Admin **quiero** un panel con resultados agregados y el **ICA** **para** entender rapidamente la calidad del acompanamiento.
 
-**Criterios de aceptación**
-- [ ] Tarjetas resumen: nº de evaluaciones, promedio general, participación.
-- [ ] Ranking/listado de líderes y tutores con su **ICA (0–100)** y **estado** (Sólido/Estable/En riesgo/Datos insuficientes).
-- [ ] Filtro por **periodo y área**.
+**Criterios de aceptacion**
+- [ ] Tarjetas resumen: no de evaluaciones, promedio general, participacion.
+- [ ] Ranking/listado de lideres y tutores con su **ICA (0-100)** y **estado** (Solido/Estable/En riesgo/Datos insuficientes).
+- [ ] Filtro por **periodo**.
 
-### DASH-02 — ICA por criterio e indicadores · `Should` · `5 SP`
+### DASH-02 — ICA por criterio e indicadores · `Should` · `3 SP`
 **Como** Admin **quiero** ver el ICA desglosado por criterio **para** identificar fortalezas y debilidades.
 
-**Criterios de aceptación**
-- [ ] Promedio por categoría/criterio (componentes del ICA) para una persona/área seleccionada.
-- [ ] Indicador de participación (% de Coders que evaluaron) y nivel de **confianza**.
-- [ ] **Datos insuficientes** cuando `n < N_MIN`: no se publica el ICA (se indica explícitamente).
-
-### DASH-03 — Visualización de tendencias · `Should` · `3 SP`
-**Como** Admin **quiero** ver la evolución temporal de las calificaciones **para** detectar mejoras o deterioros.
-
-**Criterios de aceptación**
-- [ ] Gráfico de tendencia por persona y/o criterio a lo largo de periodos.
-- [ ] Renderizado accesible (con tabla alternativa de datos).
-
-### DASH-04 — Reportes básicos (export) · `Could` · `3 SP`
-**Como** Admin **quiero** exportar los resultados **para** compartirlos fuera de la plataforma.
-
-**Criterios de aceptación**
-- [ ] Exportar a CSV los resultados agregados visibles.
-- [ ] Vista imprimible del dashboard.
-
-### DASH-05 — Configurar pesos del ICA · `Should` · `3 SP`
-**Como** Admin **quiero** ajustar el peso de cada categoría del ICA (y poder resetear) **para** reflejar qué importa más en cada momento.
-
-**Criterios de aceptación**
-- [ ] `GET /metrics/ica-weights` muestra los pesos actuales; `PUT` los guarda (valida peso > 0).
-- [ ] `POST /metrics/ica-weights/reset` restaura los **defaults** (definidos en código).
-- [ ] Los pesos **no** tienen que sumar 1/100 (el ICA normaliza por Σ); el cambio recalcula el ICA.
-- [ ] Solo el Admin accede (RBAC, `403` a otros roles).
+**Criterios de aceptacion**
+- [ ] Promedio por categoria/criterio (componentes del ICA) para una persona seleccionada.
+- [ ] Indicador de participacion (% de Coders que evaluaron) y nivel de **confianza**.
+- [ ] **Datos insuficientes** cuando `n < N_MIN`: no se publica el ICA (se indica explicitamente).
 
 ---
 
-## ÉPICA AREA
-
-### AREA-01 — Modelo de áreas y 4 roles · `Must` · `3 SP`
-**Como** sistema **quiero** una dimensión de área y los 4 roles definidos **para** medir cada área por separado.
-
-**Criterios de aceptación**
-- [ ] Catálogo `areas` (Desarrollo, Inglés, HSE, BLS) expuesto en `GET /areas`.
-- [ ] Roles = coder, tutor, team_leader, admin (un solo `role_id` por usuario).
-- [ ] TL y Tutor tienen `area_id`; coder/admin pueden no tenerla.
-
-### AREA-02 — Evaluables y plantillas por área · `Must` · `3 SP`
-**Como** Coder **quiero** ver evaluables y formularios de mi área **para** dar feedback contextual.
-
-**Criterios de aceptación**
-- [ ] `GET /users?role=...&area_id=...` filtra evaluables por rol y área.
-- [ ] La plantilla cargada corresponde al rol objetivo y al área.
-- [ ] El `area_id` viaja al registrar la evaluación (EVAL-05).
-
----
-
-## ÉPICA TLEVAL
-
-### TLEVAL-01 — Registrar nota de tutoría (TL→Tutor) · `Must` · `5 SP`
-**Como** Team Leader **quiero** registrar una nota cada vez que un Tutor da una tutoría **para** llevar su historial de desempeño.
-
-**Criterios de aceptación**
-- [ ] Textarea + valoración opcional (1–5); `POST /tutor-logs` valida en servidor (Pydantic).
-- [ ] La nota guarda `tl_id`, `tutor_id`, `area_id`, `comment`, `created_at`.
-- [ ] **Regla de negocio:** solo un team_leader puede crear notas (RBAC, `403` en otro caso).
-
-### TLEVAL-02 — Consultar mi bitácora · `Should` · `3 SP`
-**Como** Team Leader **quiero** ver el historial de notas de mis Tutores **para** acompañar su evolución.
-
-**Criterios de aceptación**
-- [ ] `GET /tutor-logs?tutor_id=...` devuelve solo las notas creadas por el TL autenticado.
-- [ ] **Regla de negocio:** un TL no puede ver notas de otro TL (`403`).
-- [ ] Filtro por tutor y orden cronológico; estado vacío.
-
----
-
-## ÉPICA AIFEED
+## AIFEED
 
 ### AIFEED-01 — Resumen de feedback con IA · `Should` · `5 SP`
-**Como** Admin **quiero** un resumen en lenguaje natural del feedback de una persona/área **para** decidir más rápido.
+**Como** Admin **quiero** un resumen en lenguaje natural del feedback de una persona **para** decidir mas rapido.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] `GET /metrics/ai-summary?evaluatee_id=...&period_id=...` (solo admin) devuelve texto generado por Claude API.
 - [ ] **Regla de privacidad:** el prompt solo incluye agregados anonimizados; nunca `evaluator_id` ni identidades.
 - [ ] El resumen se **cachea** (`ai_feedback_cache`); una segunda consulta no vuelve a llamar al modelo.
-
-### AIFEED-02 — Manejo de errores/costos de IA · `Could` · `2 SP`
-**Como** sistema **quiero** degradar con elegancia si la IA falla **para** no romper el dashboard.
-
-**Criterios de aceptación**
-- [ ] Si falta `ANTHROPIC_API_KEY` o la API falla, el endpoint responde un mensaje claro (no `500` sin contexto).
-- [ ] El dashboard muestra el ICA aunque el resumen IA no esté disponible.
-
-### AIFEED-03 — Mejoras por IA para el evaluado · `Should` · `3 SP`
-**Como** Team Leader o Tutor **quiero** ver mis resultados y sugerencias de mejora por IA **para** crecer profesionalmente.
-
-**Criterios de aceptación**
-- [ ] `GET /me/ai-feedback?period_id=...` devuelve mis resultados agregados + sugerencias de mejora.
-- [ ] Para el Tutor, las mejoras combinan el feedback de su **TL (bitácora)** y de los **Coders**.
-- [ ] **Regla de negocio:** no expone identidades de quienes evaluaron (el evaluado nunca ve evaluadores).
+- [ ] Si falta `ANTHROPIC_API_KEY` o la API falla, responde un mensaje claro (no `500` sin contexto); el dashboard funciona sin IA.
 
 ---
 
-## ÉPICA TALENT
-
-### TALENT-01 — Ranking de talento (futuros TL) · `Should` · `5 SP`
-**Como** Admin **quiero** un ranking de Tutores por preparación para ser TL **para** apoyar contratación/promoción.
-
-**Criterios de aceptación**
-- [ ] `GET /talent/candidates?area_id=...&period_id=...` (solo admin) devuelve tutores rankeados por **Talent Score (0–100)**.
-- [ ] El score combina ICA como tutor + consistencia + volumen de tutorías + tendencia (fórmula documentada).
-- [ ] Distingue **datos insuficientes** y respeta el anonimato de los evaluadores.
-
----
-
-## ÉPICA ENTREGA
+## ENTREGA
 
 ### DELIV-01 — Despliegue de la app · `Must` · `5 SP`
-**Como** equipo **queremos** la app desplegada con URL pública **para** que el jurado pueda usarla durante la sustentación.
+**Como** equipo **queremos** la app desplegada con URL publica **para** que el jurado pueda usarla durante la sustentacion.
 
-**Criterios de aceptación**
+**Criterios de aceptacion**
 - [ ] Backend FastAPI desplegado (Render/Railway/Fly) y accesible por HTTPS.
 - [ ] Frontend SPA desplegado (Vercel/Netlify/GitHub Pages) y conectado al backend.
 - [ ] MySQL hospedado y poblado con el seed (`database/schema.sql`).
-- [ ] Variables de entorno configuradas en producción (`DATABASE_URL`, `JWT_SECRET`, `ANTHROPIC_API_KEY`).
-- [ ] README con la URL pública, credenciales de usuarios demo y pasos para correr en local.
+- [ ] Variables de entorno configuradas en produccion (`DATABASE_URL`, `JWT_SECRET`, `ANTHROPIC_API_KEY`).
+- [ ] README con la URL publica, credenciales de usuarios demo y pasos para correr en local.
 
-### DELIV-02 — Pitch comercial (inglés) · `Must` · `3 SP`
-**Como** equipo **queremos** un pitch comercial de 3–5 min en inglés **para** demostrar dominio del idioma y vender el valor del producto.
+### DELIV-02 — Pitch comercial (ingles) · `Must` · `3 SP`
+**Como** equipo **queremos** un pitch comercial de 3-5 min en ingles **para** demostrar dominio del idioma y vender el valor del producto.
 
-**Criterios de aceptación**
-- [ ] Slides en inglés con problema, solución, mercado, diferenciador (IA + ICA + talento) y modelo de negocio.
+**Criterios de aceptacion**
+- [ ] Slides en ingles con problema, solucion, mercado, diferenciador (IA + ICA) y modelo de negocio.
 - [ ] Script escrito y ensayado por **todos** los integrantes (no solo uno).
-- [ ] Duración objetivo: 3–5 min cronometrados.
-- [ ] Versión exportada (PDF/PPT) en `mockups/` o en el repo.
+- [ ] Duracion objetivo: 3-5 min cronometrados.
+- [ ] Version exportada (PDF/PPT) en `mockups/` o en el repo.
 
-### DELIV-03 — Pitch técnico (español) · `Must` · `3 SP`
-**Como** equipo **queremos** un pitch técnico de 5–8 min en español **para** sustentar arquitectura, lógica de negocio y decisiones técnicas ante los jurados.
+### DELIV-03 — Pitch tecnico (espanol) · `Must` · `3 SP`
+**Como** equipo **queremos** un pitch tecnico de 5-8 min en espanol **para** sustentar arquitectura, logica de negocio y decisiones tecnicas ante los jurados.
 
-**Criterios de aceptación**
-- [ ] Slides en español: arquitectura full-stack, modelo de datos (3FN), lógica de negocio (ICA, talento, IA), GitFlow.
-- [ ] **Demo en vivo** de la app desplegada (login → evaluar → dashboard con ICA → resumen IA).
+**Criterios de aceptacion**
+- [ ] Slides en espanol: arquitectura full-stack, modelo de datos (3FN), logica de negocio (ICA, IA), GitFlow.
+- [ ] **Demo en vivo** de la app desplegada (login -> evaluar -> dashboard con ICA -> resumen IA).
 - [ ] Cada integrante explica una parte (evidencia individual).
-- [ ] Versión exportada (PDF/PPT) en el repo.
+- [ ] Version exportada (PDF/PPT) en el repo.
 
-### DELIV-04 — Documento técnico final · `Must` · `5 SP`
-**Como** equipo **queremos** un documento técnico final consolidado **para** entregar la evidencia escrita que pide la rúbrica.
+### DELIV-04 — Documento tecnico final · `Must` · `5 SP`
+**Como** equipo **queremos** un documento tecnico final consolidado **para** entregar la evidencia escrita que pide la rubrica.
 
-**Criterios de aceptación**
-- [ ] Compila los `/docs` en un solo documento (PDF o Markdown maestro) con: visión, backlog, arquitectura, BD (MER + 3FN), endpoints, lógica de negocio, evidencias.
+**Criterios de aceptacion**
+- [ ] Compila los `/docs` en un solo documento (PDF o Markdown maestro) con: vision, backlog, arquitectura, BD (MER + 3FN), endpoints, logica de negocio, evidencias.
 - [ ] Incluye **capturas** de la app desplegada y de las consultas SQL clave.
 - [ ] **Mockups finales** (Figma) exportados y enlazados.
 - [ ] README actualizado con badges (estado de despliegue, lenguaje, licencia).

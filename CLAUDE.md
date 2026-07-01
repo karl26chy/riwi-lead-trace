@@ -91,6 +91,7 @@ skill `.claude/skills/guia-generativa/SKILL.md`.
 | Requisitos no funcionales | `docs/10-requisitos-no-funcionales.md` |
 | Entregables y evaluacion | `docs/11-entregables-y-evaluacion.md` |
 | Justificacion tecnologica | `docs/12-justificacion-tecnologica.md` |
+| **Glosario de terminos (en simple)** | `docs/13-glosario.md` |
 | Script SQL ejecutable | `database/schema.sql` |
 
 ## Arquitectura en una pantalla

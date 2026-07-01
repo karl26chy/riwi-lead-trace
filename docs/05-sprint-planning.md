@@ -31,19 +31,19 @@
 
 ## Sprint 1 — Setup (Semana 1)
 
-**Sprint Goal:** dejar el proyecto listo para construir: problema definido, backlog, mockups, arquitectura, BD y andamiaje tecnico funcionando.
+**Sprint Goal:** dejar el proyecto listo para construir: problema definido, backlog, mockups, arquitectura, BD y estructura base tecnica funcionando.
 
 **Capacidad:** 15 SP + trabajo de planeacion/diseno
 
 | ID | Historia | SP | Responsable principal |
 |----|----------|:--:|-----------------------|
-| CORE-01 | Setup repo monorepo + scaffold SPA | 5 | Frontend Dev |
-| CORE-02 | Scaffold backend (FastAPI) + conexion MySQL + seed | 5 | Backend Dev |
+| CORE-01 | Preparar repo monorepo + estructura base de la SPA | 5 | Frontend Dev |
+| CORE-02 | Estructura base del backend (FastAPI) + conexion MySQL + seed | 5 | Backend Dev |
 | CORE-03 | Layout y navegacion responsive | 5 | Frontend Dev |
 
 **Trabajo de planeacion (no SP):** definicion del problema y alcance, historias de usuario, MVP, **mockups (Figma)**, modelo de datos (3FN), arquitectura, configuracion de tablero Scrum y GitFlow, plantilla de PR.
 
-**Justificacion:** la primera semana se dedica a planeacion y diseno. Se aprovecha para dejar el andamiaje full-stack listo (repo, SPA vacia navegable, API arrancando contra MySQL con seed) de modo que la semana 2 empiece a producir valor de inmediato.
+**Justificacion:** la primera semana se dedica a planeacion y diseno. Se aprovecha para dejar la estructura base full-stack lista (repo, SPA vacia navegable, API arrancando contra MySQL con seed) de modo que la semana 2 empiece a producir valor de inmediato.
 
 ---
 
@@ -111,7 +111,7 @@
 
 | Sprint | Semana | Goal | SP | Epicas |
 |--------|--------|------|:--:|--------|
-| 1 — Setup | 1 | Planeacion + andamiaje full-stack | 15 | CORE |
+| 1 — Setup | 1 | Planeacion + estructura base full-stack | 15 | CORE |
 | 2 — Funcionalidad | 2 | Login + roles + evaluaciones | 29 | AUTH, EVALUACIONES |
 | 3 — Metricas | 3 | Historial + ICA + resumen IA | 19 | HISTORIAL, DASHBOARD, AIFEED |
 | 4 — Entrega | 4 | Despliegue + pitches + doc tecnico | 16 | ENTREGA |

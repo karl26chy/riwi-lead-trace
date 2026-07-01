@@ -39,7 +39,7 @@ GitFlow es **obligatorio** y cada integrante debe evidenciar commits, ramas y Pu
 ```
 main        ← código estable / entregable (releases del MVP)
  └─ develop ← integración continua del trabajo del equipo
-     ├─ feature/CORE-02-scaffold-backend     (Backend Dev)
+     ├─ feature/CORE-02-backend-base         (Backend Dev)
      ├─ feature/EVAL-02-evaluar-team-leader  (Frontend Dev)
      └─ feature/DASH-02-metricas             (Backend Dev)
 ```

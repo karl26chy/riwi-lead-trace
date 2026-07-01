@@ -7,7 +7,7 @@ Cada historia incluye criterios de aceptacion (CA), prioridad y Story Points.
 
 ## CORE
 
-### CORE-01 — Setup repo + scaffold SPA · `Must` · `5 SP`
+### CORE-01 — Preparar repo + estructura base de la SPA · `Must` · `5 SP`
 **Como** developer **quiero** una base de proyecto SPA modular con router, store y cliente HTTP **para** construir las funcionalidades de forma ordenada y rapida.
 
 **Criterios de aceptacion**
@@ -16,7 +16,7 @@ Cada historia incluye criterios de aceptacion (CA), prioridad y Story Points.
 - [ ] Existe un router cliente que cambia de vista sin recargar la pagina.
 - [ ] Hay un modulo `store` (estado) y un modulo `http` (fetch) reutilizables.
 
-### CORE-02 — Scaffold backend (FastAPI) + BD · `Must` · `5 SP`
+### CORE-02 — Estructura base del backend (FastAPI) + BD · `Must` · `5 SP`
 **Como** developer **quiero** un backend FastAPI por capas conectado a MySQL **para** exponer la API REST que consumira la SPA.
 
 **Criterios de aceptacion**

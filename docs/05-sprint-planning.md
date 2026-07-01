@@ -13,12 +13,12 @@
 | 4 | — | Backend Developer | FastAPI + logica de negocio |
 | 5 | — | Frontend Developer | SPA Vanilla JS |
 
-- **Cronograma del proyecto integrador: 4 semanas**
-  - **Semana 1** -> *Sprint 1 — Setup*
-  - **Semana 2** -> *Sprint 2 — Funcionalidad*
-  - **Semana 3** -> *Sprint 3 — Metricas*
-  - **Semana 4** -> *Sprint 4 — Entrega*
-- **Velocidad estimada del equipo:** ~20 SP por sprint de 1 semana (5 personas).
+- **Cronograma comprimido: entrega el 17 de julio de 2026** (~2.5 semanas desde el 1 de julio).
+  - **Sprint 1 — Setup:** 1–4 jul (mie–sab)
+  - **Sprint 2 — Funcionalidad:** 5–9 jul (dom–jue)
+  - **Sprint 3 — Metricas:** 10–13 jul (vie–lun)
+  - **Sprint 4 — Entrega:** 14–17 jul (mar–vie)
+- **Velocidad estimada del equipo:** ~20 SP por semana (5 personas); en sprints de 4–5 dias equivale a ~11–14 SP por sprint.
 - **Total backlog MVP:** 79 SP (20 historias). Ver [`02-product-backlog.md`](./02-product-backlog.md).
 
 ### Eventos Scrum
@@ -29,7 +29,7 @@
 
 ---
 
-## Sprint 1 — Setup (Semana 1)
+## Sprint 1 — Setup (1–4 jul)
 
 **Sprint Goal:** dejar el proyecto listo para construir: problema definido, backlog, mockups, arquitectura, BD y estructura base tecnica funcionando.
 
@@ -43,11 +43,11 @@
 
 **Trabajo de planeacion (no SP):** definicion del problema y alcance, historias de usuario, MVP, **mockups (Figma)**, modelo de datos (3FN), arquitectura, configuracion de tablero Scrum y GitFlow, plantilla de PR.
 
-**Justificacion:** la primera semana se dedica a planeacion y diseno. Se aprovecha para dejar la estructura base full-stack lista (repo, SPA vacia navegable, API arrancando contra MySQL con seed) de modo que la semana 2 empiece a producir valor de inmediato.
+**Justificacion:** el primer sprint se dedica a planeacion y diseno. Se aprovecha para dejar la estructura base full-stack lista (repo, SPA vacia navegable, API arrancando contra MySQL con seed) de modo que el Sprint 2 empiece a producir valor de inmediato.
 
 ---
 
-## Sprint 2 — Funcionalidad (Semana 2)
+## Sprint 2 — Funcionalidad (5–9 jul)
 
 **Sprint Goal:** un usuario inicia sesion segun su rol; un Coder puede evaluar (incl. anonimo) a Team Leaders y Tutores — todo persistido en la API con sus reglas de negocio.
 
@@ -70,7 +70,7 @@
 
 ---
 
-## Sprint 3 — Metricas (Semana 3)
+## Sprint 3 — Metricas (10–13 jul)
 
 **Sprint Goal:** el Admin visualiza el **ICA** y el **resumen IA**; los Coders consultan su historial; el Admin consulta el historico por evaluado.
 
@@ -88,7 +88,7 @@
 
 ---
 
-## Sprint 4 — Entrega (Semana 4)
+## Sprint 4 — Entrega (14–17 jul)
 
 **Sprint Goal:** el producto queda integrado, probado, desplegado y con la documentacion y pitches listos para la sustentacion.
 
@@ -109,17 +109,18 @@
 
 ## Resumen
 
-| Sprint | Semana | Goal | SP | Epicas |
+| Sprint | Fechas | Goal | SP | Epicas |
 |--------|--------|------|:--:|--------|
-| 1 — Setup | 1 | Planeacion + estructura base full-stack | 15 | CORE |
-| 2 — Funcionalidad | 2 | Login + roles + evaluaciones | 29 | AUTH, EVALUACIONES |
-| 3 — Metricas | 3 | Historial + ICA + resumen IA | 19 | HISTORIAL, DASHBOARD, AIFEED |
-| 4 — Entrega | 4 | Despliegue + pitches + doc tecnico | 16 | ENTREGA |
+| 1 — Setup | 1–4 jul | Planeacion + estructura base full-stack | 15 | CORE |
+| 2 — Funcionalidad | 5–9 jul | Login + roles + evaluaciones | 29 | AUTH, EVALUACIONES |
+| 3 — Metricas | 10–13 jul | Historial + ICA + resumen IA | 19 | HISTORIAL, DASHBOARD, AIFEED |
+| 4 — Entrega | 14–17 jul | Despliegue + pitches + doc tecnico | 16 | ENTREGA |
 
 ## Gestion de riesgos del plan
 
 | Riesgo | Mitigacion |
 |--------|------------|
+| **Cronograma comprimido** (79 SP en ~2.5 semanas vs. las 4 originales) | Priorizar **Must**; parte del Sprint 1 ya esta hecho (estructura base front + back). Los **Should** (EVAL-04, HIST-01, HIST-02, DASH-02, AIFEED-01 = 16 SP) se recortan o posponen si aprieta. Recomendado conservar **AIFEED-01** por ser el diferenciador. |
 | Integracion front/back tardia | Contrato REST acordado en Sprint 1; `/docs` de FastAPI desde el inicio |
 | Reparto desigual de contribucion | Asignacion por historia + evidencia GitFlow por integrante |
 | Sprint 2 sobrecargado (29 SP > velocidad) | Paralelizar front/back; EVAL-04 es `Should` y puede posponerse |

@@ -60,7 +60,7 @@ Las historias se organizan en epicas. `CORE` es transversal (habilitadora); las 
 
 ---
 
-## Mapa epica -> sprint (cronograma de 4 semanas)
+## Mapa epica -> sprint (entrega 17 jul 2026)
 
 | Epica         | Sprint 1 Setup | Sprint 2 Funcionalidad | Sprint 3 Metricas | Sprint 4 Entrega |
 |---------------|:--------------:|:---------------------:|:-----------------:|:----------------:|

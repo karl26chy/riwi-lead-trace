@@ -5,7 +5,7 @@ Las historias se organizan en epicas. `CORE` es transversal (habilitadora); las 
 ---
 
 ## CORE — Plataforma base
-**Objetivo:** disponer del andamiaje del monorepo: SPA modular navegable + API FastAPI conectada a MySQL.
+**Objetivo:** disponer de la estructura base del monorepo: SPA modular navegable + API FastAPI conectada a MySQL.
 **Valor:** habilitador tecnico; sin esto no hay producto.
 **Historias:** CORE-01, CORE-02, CORE-03
 **Done:** la SPA arranca y navega sin recargar; el backend responde y consulta MySQL con datos seed; UI responsive.
@@ -60,7 +60,7 @@ Las historias se organizan en epicas. `CORE` es transversal (habilitadora); las 
 
 ---
 
-## Mapa epica -> sprint (cronograma de 4 semanas)
+## Mapa epica -> sprint (entrega 17 jul 2026)
 
 | Epica         | Sprint 1 Setup | Sprint 2 Funcionalidad | Sprint 3 Metricas | Sprint 4 Entrega |
 |---------------|:--------------:|:---------------------:|:-----------------:|:----------------:|

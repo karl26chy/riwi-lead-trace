@@ -83,7 +83,7 @@ skill `.claude/skills/guia-generativa/SKILL.md`.
 | Product Backlog (IDs, SP, prioridad) | `docs/02-product-backlog.md` |
 | Historias + criterios de aceptacion | `docs/03-historias-de-usuario.md` |
 | Epicas | `docs/04-epicas.md` |
-| Sprints (cronograma 4 semanas) | `docs/05-sprint-planning.md` |
+| Sprints (cronograma, entrega 17 jul) | `docs/05-sprint-planning.md` |
 | **Arquitectura full-stack** | `docs/06-arquitectura.md` |
 | **Base de datos (MER, 3FN, SQL)** | `docs/07-base-de-datos.md` |
 | **Convenciones, GitFlow, repo** | `docs/08-diseno-tecnico.md` |
@@ -91,6 +91,7 @@ skill `.claude/skills/guia-generativa/SKILL.md`.
 | Requisitos no funcionales | `docs/10-requisitos-no-funcionales.md` |
 | Entregables y evaluacion | `docs/11-entregables-y-evaluacion.md` |
 | Justificacion tecnologica | `docs/12-justificacion-tecnologica.md` |
+| **Glosario de terminos (en simple)** | `docs/13-glosario.md` |
 | Script SQL ejecutable | `database/schema.sql` |
 
 ## Arquitectura en una pantalla

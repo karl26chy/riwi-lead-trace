@@ -46,7 +46,7 @@ Planeacion Scrum y diseno tecnico en [`/docs`](./docs):
 | [02 — Product Backlog](./docs/02-product-backlog.md) | Backlog full-stack priorizado con SP |
 | [03 — Historias de Usuario](./docs/03-historias-de-usuario.md) | Historias + criterios de aceptacion |
 | [04 — Epicas](./docs/04-epicas.md) | Epicas y mapa a sprints |
-| [05 — Sprint Planning](./docs/05-sprint-planning.md) | 4 sprints sobre cronograma de 4 semanas |
+| [05 — Sprint Planning](./docs/05-sprint-planning.md) | 4 sprints (entrega 17 jul 2026) |
 | [06 — Arquitectura](./docs/06-arquitectura.md) | Arquitectura full-stack (SPA + FastAPI + MySQL) |
 | [07 — Base de Datos](./docs/07-base-de-datos.md) | MER, 3FN, modelo relacional y CRUD |
 | [08 — Diseno Tecnico](./docs/08-diseno-tecnico.md) | Convenciones, GitFlow de equipo, repo |

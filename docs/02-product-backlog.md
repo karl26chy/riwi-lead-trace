@@ -1,11 +1,11 @@
 # 02 — Product Backlog
 
-Backlog **full-stack** del MVP (frontend SPA + backend FastAPI + MySQL). Estimacion en **Story Points (SP)**, escala Fibonacci (1, 2, 3, 5, 8). Prioridad **MoSCoW** (Must / Should / Could). Cada SP refleja el esfuerzo completo (UI + endpoint + datos), salvo las historias de andamiaje.
+Backlog **full-stack** del MVP (frontend SPA + backend FastAPI + MySQL). Estimacion en **Story Points (SP)**, escala Fibonacci (1, 2, 3, 5, 8). Prioridad **MoSCoW** (Must / Should / Could). Cada SP refleja el esfuerzo completo (UI + endpoint + datos), salvo las historias de estructura base (CORE-01, CORE-02).
 
 | ID | Nombre | Descripcion | Epica | Prioridad | SP | Dependencias |
 |----|--------|-------------|-------|-----------|:--:|--------------|
-| CORE-01 | Setup repo + scaffold SPA | Monorepo, estructura `frontend/`, router, store y `http.js` | CORE | Must | 5 | — |
-| CORE-02 | Scaffold backend + BD | FastAPI, capas (routers/services/repos/models), conexion MySQL, seed | CORE | Must | 5 | — |
+| CORE-01 | Preparar repo + estructura base de la SPA | Monorepo, estructura `frontend/`, router, store y `http.js` | CORE | Must | 5 | — |
+| CORE-02 | Estructura base del backend + BD | FastAPI, capas (routers/services/repos/models), conexion MySQL, seed | CORE | Must | 5 | — |
 | CORE-03 | Layout y navegacion responsive | Shell SPA, nav por rol, estilos base mobile-first | CORE | Must | 5 | CORE-01 |
 | AUTH-01 | Inicio de sesion | UI login + `POST /auth/login` con hash + emision de JWT | AUTH | Must | 3 | CORE-02, CORE-03 |
 | AUTH-02 | Sesion y rutas protegidas | JWT en `localStorage`, guards SPA, `get_current_user`, expiracion/logout | AUTH | Must | 5 | AUTH-01 |
@@ -38,7 +38,7 @@ La rubrica exige logica de negocio identificable mas alla del CRUD. En este back
 
 ## Orden de refinamiento
 
-1. **CORE** (andamiaje front + back + BD).
+1. **CORE** (estructura base front + back + BD).
 2. **AUTH** (identidad y rol; todo depende de ello).
 3. **EVAL** (nucleo de valor; feedback ascendente).
 4. **HIST + DASH** (convierten datos en informacion accionable: ICA).

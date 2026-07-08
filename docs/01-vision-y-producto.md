@@ -49,4 +49,4 @@ Validar, mediante un MVP funcional, que un proceso de **feedback ascendente estr
 - Aplicacion **full-stack**: SPA en **HTML5 + CSS3 + JS Vanilla** + backend **FastAPI** + **MySQL** (3FN).
 - Debe incluir **logica de negocio** identificable (no limitarse a CRUD basico).
 - Alcance **MVP**: validar la idea con una solucion funcional, estable y con valor para el usuario.
-- Cronograma comprimido con **entrega el 17 de julio de 2026**, metodologia Scrum y **GitFlow** obligatorios.
+- Cronograma del **20 de junio al 17 de julio de 2026** (~4 semanas), metodologia Scrum y **GitFlow** obligatorios.

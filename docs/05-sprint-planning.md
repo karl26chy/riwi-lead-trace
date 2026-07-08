@@ -13,11 +13,11 @@
 | 4 | — | Backend Developer | FastAPI + logica de negocio |
 | 5 | — | Frontend Developer | SPA Vanilla JS |
 
-- **Entrega final: 17 de julio de 2026.**
-  - **Sprint 1 — Setup**
-  - **Sprint 2 — Funcionalidad**
-  - **Sprint 3 — Metricas**
-  - **Sprint 4 — Entrega**
+- **Cronograma: 20 de junio – 17 de julio de 2026** (~4 semanas).
+  - **Sprint 1 — Setup:** 20 jun – 1 jul
+  - **Sprint 2 — Funcionalidad:** 2 – 9 jul
+  - **Sprint 3 — Metricas:** 10 – 13 jul
+  - **Sprint 4 — Entrega:** 14 – 17 jul
 - **Velocidad estimada del equipo:** ~20 SP por semana (5 personas).
 - **Total backlog MVP:** 79 SP (20 historias). Ver [`02-product-backlog.md`](./02-product-backlog.md).
 
@@ -29,7 +29,7 @@
 
 ---
 
-## Sprint 1 — Setup
+## Sprint 1 — Setup (20 jun – 1 jul)
 
 **Sprint Goal:** dejar el proyecto listo para construir: problema definido, backlog, mockups, arquitectura, BD y estructura base tecnica funcionando.
 
@@ -43,11 +43,11 @@
 
 **Trabajo de planeacion (no SP):** definicion del problema y alcance, historias de usuario, MVP, **mockups (Figma)**, modelo de datos (3FN), arquitectura, configuracion de tablero Scrum y GitFlow, plantilla de PR.
 
-**Justificacion:** el primer sprint se dedica a planeacion y diseno. Se aprovecha para dejar la estructura base full-stack lista (repo, SPA vacia navegable, API arrancando contra MySQL con seed) de modo que el Sprint 2 empiece a producir valor de inmediato.
+**Justificacion:** las primeras semanas combinaron planeacion, investigacion y construccion en paralelo: mientras se refinaban historias, MVP y modelo de datos, el equipo ya dejaba lista la estructura base full-stack (CORE-01, CORE-02) para que el Sprint 2 empezara a producir valor de inmediato.
 
 ---
 
-## Sprint 2 — Funcionalidad
+## Sprint 2 — Funcionalidad (2 – 9 jul)
 
 **Sprint Goal:** un usuario inicia sesion segun su rol; un Coder puede evaluar (incl. anonimo) a Team Leaders y Tutores — todo persistido en la API con sus reglas de negocio.
 
@@ -70,7 +70,7 @@
 
 ---
 
-## Sprint 3 — Metricas
+## Sprint 3 — Metricas (10 – 13 jul)
 
 **Sprint Goal:** el Admin visualiza el **ICA** y el **resumen IA**; los Coders consultan su historial; el Admin consulta el historico por evaluado.
 
@@ -88,7 +88,7 @@
 
 ---
 
-## Sprint 4 — Entrega (cierra 17 jul)
+## Sprint 4 — Entrega (14 – 17 jul)
 
 **Sprint Goal:** el producto queda integrado, probado, desplegado y con la documentacion y pitches listos para la sustentacion.
 
@@ -109,18 +109,18 @@
 
 ## Resumen
 
-| Sprint | Goal | SP | Epicas |
-|--------|------|:--:|--------|
-| 1 — Setup | Planeacion + estructura base full-stack | 15 | CORE |
-| 2 — Funcionalidad | Login + roles + evaluaciones | 29 | AUTH, EVALUACIONES |
-| 3 — Metricas | Historial + ICA + resumen IA | 19 | HISTORIAL, DASHBOARD, AIFEED |
-| 4 — Entrega | Despliegue + pitches + doc tecnico (cierra 17 jul) | 16 | ENTREGA |
+| Sprint | Fechas | Goal | SP | Epicas |
+|--------|--------|------|:--:|--------|
+| 1 — Setup | 20 jun – 1 jul | Planeacion + estructura base full-stack | 15 | CORE |
+| 2 — Funcionalidad | 2 – 9 jul | Login + roles + evaluaciones | 29 | AUTH, EVALUACIONES |
+| 3 — Metricas | 10 – 13 jul | Historial + ICA + resumen IA | 19 | HISTORIAL, DASHBOARD, AIFEED |
+| 4 — Entrega | 14 – 17 jul | Despliegue + pitches + doc tecnico | 16 | ENTREGA |
 
 ## Gestion de riesgos del plan
 
 | Riesgo | Mitigacion |
 |--------|------------|
-| **Cronograma ajustado a la entrega del 17 de julio** | Priorizar **Must**; el Sprint 1 ya esta hecho (estructura base front + back). Los **Should** (EVAL-04, HIST-01, HIST-02, DASH-02, AIFEED-01 = 16 SP) se recortan o posponen si aprieta. Recomendado conservar **AIFEED-01** por ser el diferenciador. |
+| **Sprints 2-4 comprimidos** (64 SP en ~2.5 semanas) | Priorizar **Must**; el Sprint 1 ya esta hecho (estructura base front + back). Los **Should** (EVAL-04, HIST-01, HIST-02, DASH-02, AIFEED-01 = 16 SP) se recortan o posponen si aprieta. Recomendado conservar **AIFEED-01** por ser el diferenciador. |
 | Integracion front/back tardia | Contrato REST acordado en Sprint 1; `/docs` de FastAPI desde el inicio |
 | Reparto desigual de contribucion | Asignacion por historia + evidencia GitFlow por integrante |
 | Sprint 2 sobrecargado (29 SP > velocidad) | Paralelizar front/back; EVAL-04 es `Should` y puede posponerse |

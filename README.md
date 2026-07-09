@@ -34,26 +34,24 @@ Proyecto desarrollado por un equipo Scrum de **5 Coders** de la misma jornada. R
 | Auth | JWT (JSON Web Tokens) | Sesion sin estado; RBAC por rol |
 | Tooling front (dev) | Vite | Dev server / bundler (no es framework de UI) |
 
-Justificacion tecnologica completa: [`docs/12-justificacion-tecnologica.md`](./docs/12-justificacion-tecnologica.md).
+Justificacion tecnologica completa: [`docs/06-arquitectura.md`](./docs/06-arquitectura.md).
 
 ## Documentacion
 
-Planeacion Scrum y diseno tecnico en [`/docs`](./docs):
+**Empieza por [`docs/00-documento-tecnico.md`](./docs/00-documento-tecnico.md)** — resume todo el proyecto en un solo lugar. El resto de `/docs` es el detalle de cada tema:
 
 | Documento | Contenido |
 |-----------|-----------|
+| [00 — Documento Tecnico](./docs/00-documento-tecnico.md) | Resumen completo del proyecto (1 solo documento) |
 | [01 — Vision y Producto](./docs/01-vision-y-producto.md) | Vision, Goal, objetivos, metricas |
 | [02 — Product Backlog](./docs/02-product-backlog.md) | Backlog full-stack priorizado con SP |
 | [03 — Historias de Usuario](./docs/03-historias-de-usuario.md) | Historias + criterios de aceptacion |
-| [04 — Epicas](./docs/04-epicas.md) | Epicas y mapa a sprints |
-| [05 — Sprint Planning](./docs/05-sprint-planning.md) | 4 sprints (entrega 17 jul 2026) |
-| [06 — Arquitectura](./docs/06-arquitectura.md) | Arquitectura full-stack (SPA + FastAPI + MySQL) |
+| [05 — Sprint Planning](./docs/05-sprint-planning.md) | Epicas + 4 sprints (entrega 17 jul 2026) |
+| [06 — Arquitectura](./docs/06-arquitectura.md) | Arquitectura full-stack + justificacion tecnologica |
 | [07 — Base de Datos](./docs/07-base-de-datos.md) | MER, 3FN, modelo relacional y CRUD |
 | [08 — Diseno Tecnico](./docs/08-diseno-tecnico.md) | Convenciones, GitFlow de equipo, repo |
-| [09 — Alcance MVP](./docs/09-mvp-alcance.md) | Dentro/fuera del MVP |
-| [10 — Requisitos No Funcionales](./docs/10-requisitos-no-funcionales.md) | Seguridad, rendimiento, accesibilidad |
+| [09 — Alcance MVP](./docs/09-mvp-alcance.md) | Dentro/fuera del MVP + requisitos no funcionales |
 | [11 — Entregables y Evaluacion](./docs/11-entregables-y-evaluacion.md) | Entregables del proyecto integrador |
-| [12 — Justificacion Tecnologica](./docs/12-justificacion-tecnologica.md) | Por que FastAPI + MySQL + SPA Vanilla |
 
 Script SQL inicial: [`/database/schema.sql`](./database/schema.sql).
 

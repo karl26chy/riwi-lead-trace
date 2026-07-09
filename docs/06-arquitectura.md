@@ -7,6 +7,51 @@
 - **Logica de negocio explicita** (no solo CRUD): vive en la capa `services` del backend.
 - **Contrato REST estable** entre SPA y API -> frontend y backend evolucionan en paralelo.
 
+## Estilo arquitectonico: monolito modular por capas
+
+Es **un monolito**: un solo backend desplegable y una sola SPA desplegable (no microservicios). Es
+**modular**: dentro de cada uno, el codigo se separa en modulos con una responsabilidad clara, para
+que no se vuelva espagueti.
+
+La organizacion interna es **horizontal (por capa tecnica)**, no vertical (por feature): todo lo de
+rutas vive junto (`routers/`), toda la logica de negocio vive junta (`services/`), todo el acceso a
+datos vive junto (`repositories/`). La alternativa (**vertical**: una carpeta por feature con su
+propio router+service+repo adentro, ej. `features/evaluations/`) se descarta a proposito: con ~7
+entidades y ~8 endpoints, separar por feature agrega carpetas y decisiones sin beneficio real para
+un equipo de 5 en un MVP corto. Horizontal es mas facil de explicar y de encontrar codigo ("¿donde
+esta la logica? en `services/`").
+
+## Patrones de diseño
+
+En **backend, la programacion orientada a objetos encaja natural** (Python + FastAPI ya trabajan asi).
+En **frontend Vanilla JS, se usan clases solo donde de verdad ayudan** (cuando hay estado que
+mantener) — forzar clases en todo (vistas, servicios) agrega ceremonia sin beneficio real cuando una
+funcion pura hace lo mismo con menos codigo.
+
+### Backend (POO explicita)
+
+| Patron | Donde | Que resuelve |
+|---|---|---|
+| **Layered Architecture** | `routers/ -> services/ -> repositories/ -> models/` | Cada capa tiene una responsabilidad; los cambios quedan localizados |
+| **Repository** | `repositories/` (ej. `EvaluationRepository`) | Encapsula el acceso a datos; los `services` no escriben SQL/queries directamente |
+| **Service Layer** | `services/` (ej. `EvaluationService`, `MetricsService`) | Concentra la logica de negocio (anonimato, no-duplicado, calculo del ICA) fuera de los routers |
+| **Dependency Injection** | `Depends(get_db)`, `Depends(get_current_user)`, `Depends(require_role(...))` | FastAPI inyecta dependencias en vez de que cada endpoint las construya; facilita testear |
+| **DTO (Data Transfer Object)** | `schemas/` (Pydantic) | Define exactamente que entra/sale de la API, distinto del modelo de BD |
+| **Data Mapper** | `models/` (SQLAlchemy ORM) | Mapea objetos Python a filas de MySQL sin que el resto del codigo escriba SQL |
+
+### Frontend (funciones + un poco de OOP donde importa)
+
+| Patron | Donde | Que resuelve |
+|---|---|---|
+| **Module Pattern** | Cada archivo `*.service.js`, `*.view.js` (ES Modules) | Encapsula detalles; solo se exporta lo necesario |
+| **Observer** | `store.js` (`subscribe`/`setState` notifica a quien escucha) | El estado compartido (sesion, tema) cambia en un lugar y todos los suscriptores se enteran — es el unico lugar del frontend con estado real, por eso aqui si vale una clase |
+| **Front Controller** | `router.js` (`renderRoute`) | Un unico punto de entrada decide que vista renderizar segun la ruta y el rol |
+
+**Vistas, componentes y `*.service.js` se quedan como funciones**, no clases: no guardan estado propio
+entre llamadas (reciben datos, devuelven HTML o hacen un `fetch`), asi que una clase ahi solo anadiria
+`this.` sin ganar nada. El unico candado a OOP real en frontend es el **store**, porque es el unico
+sitio con estado que varias partes necesitan compartir y observar.
+
 ## Arquitectura general (full-stack)
 
 ```
@@ -222,3 +267,19 @@ Por cada `(evaluatee_id, period_id)`, solo con evaluaciones `submitted`:
 - Validacion de formularios en cliente (`utils/validators.js`) antes de enviar.
 - Estados de **carga** y **vacio** estandarizados (`loader`, estado vacio).
 - `window.onerror` / `unhandledrejection` -> toast generico + log.
+
+## Justificacion tecnologica
+
+La rubrica exige justificar las decisiones tecnicas. Todas las elecciones estan dentro de las tecnologias permitidas por el proyecto integrador.
+
+| Capa | Eleccion | Alternativas permitidas | Por que esta |
+|---|---|---|---|
+| Frontend | HTML5 + CSS3 + **JS Vanilla (SPA)** | (obligatorio; sin frameworks) | Requisito del proyecto |
+| Backend | **Python + FastAPI** | Flask, Express.js | Python alineado a la Ruta Basica; validacion y docs integradas |
+| Base de datos | **MySQL** | PostgreSQL, MongoDB | Datos relacionales, integridad, consultas agregadas |
+| Auth | **JWT** | sesiones server-side | Sin estado, encaja con SPA + API REST |
+| IA (resumenes) | **Claude API** (`anthropic`) | otros LLM, sin IA | Calidad de redaccion + privacidad por diseno (solo agregados anonimos) |
+
+**FastAPI** trae validacion (Pydantic), tipado y documentacion automatica (Swagger/`/docs`) sin librerias extra — util para la sustentacion. **MySQL** encaja porque el dominio es naturalmente relacional (usuarios<->roles, evaluaciones<->respuestas) y el dashboard vive de consultas agregadas. **JWT** es la opcion natural para una SPA sin estado. **Claude API** resume el feedback en lenguaje natural para el Admin — es el diferenciador, pero la IA complementa la logica de negocio propia (el ICA), que es lo que evalua la rubrica como "no-CRUD".
+
+**Decisiones que evitan sobreingenieria:** sin frameworks de frontend ni estado externo; ORM simple (SQLAlchemy) sobre un esquema 3FN sin complejidad extra; `database/schema.sql` versionado en vez de migraciones (Alembic queda como mejora futura); tests enfocados en la logica de negocio, no en cobertura total.

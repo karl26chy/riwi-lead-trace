@@ -79,18 +79,16 @@ skill `.claude/skills/guia-generativa/SKILL.md`.
 
 | Tema | Archivo |
 |------|---------|
+| **Resumen completo del proyecto (1 solo documento)** | `docs/00-documento-tecnico.md` |
 | Vision, objetivos, metricas | `docs/01-vision-y-producto.md` |
 | Product Backlog (IDs, SP, prioridad) | `docs/02-product-backlog.md` |
 | Historias + criterios de aceptacion | `docs/03-historias-de-usuario.md` |
-| Epicas | `docs/04-epicas.md` |
-| Sprints (cronograma, entrega 17 jul) | `docs/05-sprint-planning.md` |
-| **Arquitectura full-stack** | `docs/06-arquitectura.md` |
+| Epicas + Sprints (cronograma, entrega 17 jul) | `docs/05-sprint-planning.md` |
+| **Arquitectura full-stack + justificacion tecnologica** | `docs/06-arquitectura.md` |
 | **Base de datos (MER, 3FN, SQL)** | `docs/07-base-de-datos.md` |
 | **Convenciones, GitFlow, repo** | `docs/08-diseno-tecnico.md` |
-| Alcance MVP | `docs/09-mvp-alcance.md` |
-| Requisitos no funcionales | `docs/10-requisitos-no-funcionales.md` |
+| Alcance MVP + requisitos no funcionales | `docs/09-mvp-alcance.md` |
 | Entregables y evaluacion | `docs/11-entregables-y-evaluacion.md` |
-| Justificacion tecnologica | `docs/12-justificacion-tecnologica.md` |
 | **Glosario de terminos (en simple)** | `docs/13-glosario.md` |
 | Script SQL ejecutable | `database/schema.sql` |
 
@@ -202,6 +200,6 @@ Detalle y modelo de datos: `docs/06-arquitectura.md` y `docs/07-base-de-datos.md
 2. **Respeta la arquitectura** de `docs/06-arquitectura.md` (capas y ubicacion de archivos en front y back).
 3. Implementa lo minimo para cumplir los criterios; **sin sobreingenieria** y **sin degradar la logica de negocio a CRUD**.
 4. Valida en **servidor** (Pydantic) ademas de en cliente; maneja errores y devuelve codigos HTTP correctos.
-5. Asegura **responsive** y **accesibilidad** basica (`docs/10-requisitos-no-funcionales.md`).
+5. Asegura **responsive** y **accesibilidad** basica (`docs/09-mvp-alcance.md`).
 6. Commits pequenos con Conventional Commits; cumple la Definition of Done.
 7. Si cambias decisiones de arquitectura/producto, **actualiza tambien `/docs` y este `CLAUDE.md`**.

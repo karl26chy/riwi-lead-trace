@@ -1,5 +1,33 @@
 # 05 — Sprint Planning
 
+## Epicas
+
+Las historias se organizan en 7 epicas. `CORE` es transversal (habilitadora); las demas representan valor de negocio. Todas son **full-stack** (frontend SPA + backend FastAPI + MySQL).
+
+| Epica | Objetivo | Historias |
+|---|---|---|
+| **CORE** | Estructura base del monorepo: SPA modular + API FastAPI + MySQL. | CORE-01/02/03 |
+| **AUTH** | Login con JWT y autorizacion por rol en cliente y servidor. | AUTH-01/02/03 |
+| **EVALUACIONES** | Nucleo del producto: Coders evaluan TL/Tutores (con opcion anonima), persistido con sus reglas de negocio. | EVAL-01..05 |
+| **HISTORIAL** | Trazabilidad: consultar evaluaciones pasadas y su evolucion. | HIST-01/02 |
+| **DASHBOARD** | Transformar evaluaciones en informacion accionable: **ICA** e indicadores. | DASH-01/02 |
+| **AIFEED** | Resumen de feedback con **Claude API** para el Admin (diferenciador). | AIFEED-01 |
+| **ENTREGA** | Entregables no-codigo: despliegue, pitches y documento tecnico. | DELIV-01..04 |
+
+### Mapa epica -> sprint
+
+| Epica | Sprint 1 Setup | Sprint 2 Funcionalidad | Sprint 3 Metricas | Sprint 4 Entrega |
+|---|:--:|:--:|:--:|:--:|
+| CORE | CORE-01/02/03 | | | |
+| AUTH | | AUTH-01/02/03 | | |
+| EVALUACIONES | | EVAL-01..05 | | |
+| HISTORIAL | | | HIST-01/02 | |
+| DASHBOARD | | | DASH-01/02 | |
+| AIFEED | | | AIFEED-01 | |
+| ENTREGA | | parcial (DELIV-04) | | DELIV-01..04 |
+
+---
+
 ## Marco de trabajo
 
 - **Equipo:** 5 Coders de la misma jornada (Scrum obligatorio).

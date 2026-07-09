@@ -9,7 +9,7 @@ Base de datos **relacional MySQL** consumida por el backend FastAPI. Modelo **no
 - El dashboard requiere **consultas agregadas** (promedios, conteos, agrupaciones) que SQL resuelve de forma natural.
 - Es ampliamente ensenada en la Ruta Basica -> el equipo puede sustentarla con solvencia.
 
-Justificacion ampliada en [`12-justificacion-tecnologica.md`](./12-justificacion-tecnologica.md).
+Justificacion ampliada en [`06-arquitectura.md`](./06-arquitectura.md).
 
 ## Entidades
 

@@ -222,3 +222,19 @@ Por cada `(evaluatee_id, period_id)`, solo con evaluaciones `submitted`:
 - Validacion de formularios en cliente (`utils/validators.js`) antes de enviar.
 - Estados de **carga** y **vacio** estandarizados (`loader`, estado vacio).
 - `window.onerror` / `unhandledrejection` -> toast generico + log.
+
+## Justificacion tecnologica
+
+La rubrica exige justificar las decisiones tecnicas. Todas las elecciones estan dentro de las tecnologias permitidas por el proyecto integrador.
+
+| Capa | Eleccion | Alternativas permitidas | Por que esta |
+|---|---|---|---|
+| Frontend | HTML5 + CSS3 + **JS Vanilla (SPA)** | (obligatorio; sin frameworks) | Requisito del proyecto |
+| Backend | **Python + FastAPI** | Flask, Express.js | Python alineado a la Ruta Basica; validacion y docs integradas |
+| Base de datos | **MySQL** | PostgreSQL, MongoDB | Datos relacionales, integridad, consultas agregadas |
+| Auth | **JWT** | sesiones server-side | Sin estado, encaja con SPA + API REST |
+| IA (resumenes) | **Claude API** (`anthropic`) | otros LLM, sin IA | Calidad de redaccion + privacidad por diseno (solo agregados anonimos) |
+
+**FastAPI** trae validacion (Pydantic), tipado y documentacion automatica (Swagger/`/docs`) sin librerias extra — util para la sustentacion. **MySQL** encaja porque el dominio es naturalmente relacional (usuarios<->roles, evaluaciones<->respuestas) y el dashboard vive de consultas agregadas. **JWT** es la opcion natural para una SPA sin estado. **Claude API** resume el feedback en lenguaje natural para el Admin — es el diferenciador, pero la IA complementa la logica de negocio propia (el ICA), que es lo que evalua la rubrica como "no-CRUD".
+
+**Decisiones que evitan sobreingenieria:** sin frameworks de frontend ni estado externo; ORM simple (SQLAlchemy) sobre un esquema 3FN sin complejidad extra; `database/schema.sql` versionado en vez de migraciones (Alembic queda como mejora futura); tests enfocados en la logica de negocio, no en cobertura total.

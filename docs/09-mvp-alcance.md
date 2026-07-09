@@ -48,3 +48,16 @@ Filosofia: **startup validando una idea**. El MVP debe ser lo minimo para compro
 ## Criterio de exito del MVP
 
 El MVP se considera validado si, durante el piloto, se alcanzan las **metricas de exito** definidas en [`01-vision-y-producto.md`](./01-vision-y-producto.md) (adopcion >=60%, completitud >=80%, y al menos un admin usando el dashboard semanalmente), confirmando que el feedback ascendente genera informacion accionable.
+
+## Requisitos no funcionales (RNF)
+
+Definidos con criterio MVP: suficientes para un piloto confiable, sin sobreingenieria.
+
+| RNF | Que exige | Objetivo verificable |
+|---|---|---|
+| **Seguridad** | JWT + contrasenas hasheadas (bcrypt); anonimato real (sin `evaluator_id`); RBAC validado en backend; HTTPS en produccion; sanear entradas (evitar XSS). | 0 contrasenas en texto plano; anonimas sin `evaluator_id` |
+| **Escalabilidad** | Frontend desacoplado via contrato REST; arquitectura modular; plantillas de formulario en BD. | — |
+| **Rendimiento** | Bundle ligero (Vite, sin frameworks pesados); estados de carga; evitar peticiones redundantes. | FCP < 2s; bundle inicial liviano |
+| **Usabilidad** | Responsive mobile-first (>=320px); feedback inmediato (carga/vacio/error/exito); validacion clara por campo. | Completar evaluacion en <=3 clics |
+| **Mantenibilidad** | Capas separadas (router/store/services en front; services/repositories en back); Conventional Commits; docs vivos. | Logica de negocio aislada en `services` |
+| **Accesibilidad** | HTML semantico; navegacion por teclado; contraste WCAG AA; `aria-*` donde falte semantica. | Navegable 100% por teclado; contraste AA |

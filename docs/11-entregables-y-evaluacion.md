@@ -22,9 +22,9 @@ Cubierto por `/docs` (este conjunto):
 | Historias de usuario | 03 |
 | Arquitectura de la solución | 06 |
 | Modelo de datos | 07 + `database/schema.sql` |
-| Evidencias Scrum | 02, 03, 04, 05 + tablero |
+| Evidencias Scrum | 02, 03, 05 + tablero |
 | MVP definido | 09 |
-| Justificación tecnológica | 12 |
+| Justificación tecnológica | 06 |
 
 ### 3. Mockups / Prototipos
 - Carpeta [`/mockups`](../mockups) con exports o enlace a **Figma** (sugerido) / Miro / Draw.io.

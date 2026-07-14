@@ -5,7 +5,7 @@ no se calcula nada, y con suficientes da un puntaje entre 0 y 100.
 from sqlalchemy import text
 
 from app.config.database import conn
-from app.services.metrics_service import calculate_average_score, MIN_EVALUATIONS
+from app.services.metrics_service import calculate_average_score, classify_status, MIN_EVALUATIONS
 
 TEAM_LEADER_ID = 2
 TEMPLATE_TEAM_LEADER = 1
@@ -15,6 +15,14 @@ SCALE_QUESTION_ID = 1
 # database/schema.sql: no se puede insertar dos evaluaciones del mismo
 # evaluador a la misma persona en el mismo periodo.
 EVALUATOR_IDS = [1, 3, 4]
+
+
+def test_classify_status_por_umbral():
+    assert classify_status(None) == "Datos insuficientes"
+    assert classify_status(59) == "En riesgo"
+    assert classify_status(60) == "Estable"
+    assert classify_status(79) == "Estable"
+    assert classify_status(80) == "Sólido"
 
 
 def test_datos_insuficientes_si_no_hay_evaluaciones(temp_period):

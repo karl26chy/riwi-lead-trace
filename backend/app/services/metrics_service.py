@@ -3,6 +3,27 @@ from app.config.database import conn
 
 MIN_EVALUATIONS = 3
 
+# Umbrales del estado del ICP: son constantes fijas en codigo (sustentables
+# en la defensa), el admin no las puede editar desde la UI.
+UMBRAL_EN_RIESGO = 60
+UMBRAL_SOLIDO = 80
+
+
+def classify_status(average_score):
+    """Clasifica el ICP en un estado simple segun umbrales fijos.
+
+    No compara contra el periodo anterior (no hay tendencia): es solo el
+    puntaje actual contra dos umbrales.
+    """
+    if average_score is None:
+        return "Datos insuficientes"
+    if average_score < UMBRAL_EN_RIESGO:
+        return "En riesgo"
+    if average_score >= UMBRAL_SOLIDO:
+        return "Sólido"
+    return "Estable"
+
+
 def calculate_average_score(evaluatee_id: int, period_id: int):
     """Calcula el promedio simple (0-100) de los puntajes recibidos por una persona en un periodo."""
     count_query = text("""
@@ -56,6 +77,7 @@ def get_metrics_summary(period_id: int):
         user_dict = dict(row)
         score_info = calculate_average_score(user_dict["id"], period_id)
         user_dict.update(score_info)
+        user_dict["status"] = classify_status(score_info["average_score"])
         evaluatees.append(user_dict)
         if score_info["average_score"] is not None:
             scores.append(score_info["average_score"])

@@ -197,7 +197,7 @@ def get_metrics_summary(period_id: int, current_user: dict = Depends(require_rol
 > body, cualquiera podria enviar evaluaciones haciendose pasar por otro coder y saltarse la regla
 > de "no evaluar dos veces" (ver `services/evaluation_service.py`).
 
-## Logica de negocio destacada (ICA · IA)
+## Logica de negocio destacada (ICP · IA)
 
 Toda esta logica vive en `services/` (no en routers ni queries dispersas). Es la parte "no CRUD".
 
@@ -257,7 +257,7 @@ editar, y el **chequeo de coherencia con IA** (parte de ADMIN-02) las usa como c
 6. **Estado:** `En riesgo` (`score < 60` o `D <= -10`), `Solido` (`>=80` y `D>=0`), `Estable` o
    `Datos insuficientes`. Umbrales y pesos son constantes documentadas (sustentables).
 
-> El ICA **no se persiste**: se calcula on-read a partir de agregados que trae `metrics_service`.
+> El ICP **no se persiste**: se calcula on-read a partir de agregados que trae `metrics_service`.
 
 ### Resumen por IA — `ai_service`
 - Construye un prompt con **agregados anonimizados** (promedios por categoria, conteos, comentarios

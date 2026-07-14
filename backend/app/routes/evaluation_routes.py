@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, status, Depends
 from typing import List, Optional
-from app.schemas.evaluation import EvaluationCreate, EvaluationOut, EvaluationDetailOut
+from app.schemas.evaluation import EvaluationCreate, EvaluationDetailOut
 from app.services import evaluation_service
 from app.deps import get_current_user
 

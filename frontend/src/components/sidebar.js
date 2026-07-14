@@ -9,23 +9,27 @@ export const sidebarComponent = (isActive) => {
 
   return `
     <div id="sidebar-overlay" class="fixed inset-0 z-40 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-    <aside id="main-sidebar" class="fixed top-0 left-0 z-50 h-full w-72 -translate-x-full bg-[var(--bg-panel)] flex flex-col border-r border-[var(--border-main)] shadow-2xl transition-transform duration-300 ease-in-out">
+    <aside id="main-sidebar" class="fixed top-0 left-0 z-50 h-full w-72 -translate-x-full bg-[var(--bg-sidebar)] flex flex-col border-r border-[var(--border-main)] shadow-2xl transition-transform duration-300 ease-in-out">
       
       <div class="p-6 border-b border-[var(--border-main)] flex items-center justify-between">
+
         <div>
-          <h2 class="text-xl font-black text-[var(--text-main)] flex items-center gap-2">
-            <svg class="w-6 h-6 text-[#7559ED]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v18h4v-7h6v7h4V3H5zm6 9H9V6h2v6zm4 0h-2V6h2v6z"/></svg>
+          <img src="../../public/icons/riwi_logo_oscuro.png" alt="Logo Riwi" class="logo-light block w-auto h-8 object-contain">
+          <img src="../../public/icons/riwi_logo.png" alt="Logo Riwi" class="logo-dark block w-auto h-8 object-contain">
+          <h2 class="text-xl font-medium font-black text-[var(--text-main)] ">
             LeadTrace
           </h2>
           <p class="text-xs text-[var(--text-muted)] font-medium mt-1">Professional Feedback</p>
         </div>
+
         <button id="close-sidebar-btn" class="p-2 text-[var(--text-muted)] hover:bg-[var(--bg-base)] rounded-xl cursor-pointer hover:text-[var(--text-main)] transition-colors lg:hidden">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
+        
       </div>
 
       <div class="px-6 py-4">
-        <a href="/evaluations/new" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#7559ED] py-3 text-sm font-bold text-white transition-all hover:bg-[#4139A3] hover:shadow-md cursor-pointer">
+        <a href="/evaluations/new" class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6b5cff] py-3 text-sm font-bold text-white transition-all hover:bg-[#4139A3] hover:shadow-md cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
           New Evaluation
         </a>
@@ -50,7 +54,7 @@ export const sidebarComponent = (isActive) => {
         </a>
       </nav>
 
-      <div class="p-6 border-t border-[var(--border-main)]">
+      <div class="p-6 border-t border-[var(--border-main)] bg-[var(--bg-panel)]">
         <a href="/support" class="flex items-center gap-3 text-sm font-medium text-[var(--text-muted)] hover:text-[#7559ED] transition-colors mb-6">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Support

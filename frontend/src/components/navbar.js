@@ -20,6 +20,7 @@ export const navBarComponent = () => {
     return `
     <header class="border-b border-[var(--border-main)] bg-[var(--bg-panel)]/90 backdrop-blur sticky top-0 z-50">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <img src="../../public/icons/riwi_logo.png" alt="Logo" class="w-auto h-8">
         <a class="text-xl font-black text-[var(--brand-bg)] transition-colors hover:text-[var(--brand-hover)]" href="/">LeadTrace</a>
         <div class="flex items-center gap-3">
           <div class="hidden sm:block">
@@ -36,15 +37,15 @@ export const navBarComponent = () => {
   return `
     ${sidebarComponent(isActive)}
     
-    <header class="sticky top-0 z-30 w-full" style="background: linear-gradient(90deg, #4139A3 0%, #7559ED 50%, #D69CF8 100%);">
+    <header class="sticky top-0 z-30 w-full" style="background: linear-gradient(90deg, var(--topbar-grad-start) 0%, var(--topbar-grad-mid) 50%, var(--topbar-grad-end) 100%);">
       <div class="flex h-16 items-center justify-between px-6">
         
         <div class="flex items-center gap-4 text-white">
           <button id="open-sidebar-btn" class="p-2 hover:bg-white/20 rounded-xl transition-colors cursor-pointer text-white">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
-          
-          <a class="text-xl font-black hidden sm:block text-white tracking-wide" href="/dashboard">LeadTrace</a>
+          <img src="../../public/icons/riwi_logo.png" alt="Logo" class="w-auto h-6">
+          <a class="font-heading font-semibold text-xl font-black hidden mt-1 sm:block text-white tracking-wide" href="/dashboard">LeadTrace</a>
         </div>
 
         <div class="flex items-center gap-4 text-white">
@@ -65,7 +66,7 @@ export const navBarComponent = () => {
           </div>
 
           <!-- Boton Cerrar Sesion -->
-          <button id="logout-btn" class="flex items-center gap-2 border border-white/30 rounded-full px-4 py-1.5 text-sm font-medium hover:bg-white/20 transition-colors cursor-pointer text-white">
+          <button id="logout-btn" class="flex items-center gap-2 border border-white/30 rounded-full px-4 py-1.5 text-sm font-medium  hover:border-[var(--danger-hover)] hover:text-[var(--danger-hover)] transition-colors cursor-pointer text-white">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             <span class="hidden sm:inline">Cerrar sesión</span>
           </button>
@@ -89,8 +90,17 @@ export const setupNavBar = () => {
   themeBtns.forEach(btn => {
     btn.addEventListener("click", () => {
       const theme = btn.getAttribute("data-theme");
-      themeService.setTheme(theme);
-      renderRoute();
+      
+      const switchTheme = () => {
+        themeService.setTheme(theme);
+        renderRoute();
+      };
+
+      if (!document.startViewTransition) {
+        switchTheme();
+      } else {
+        document.startViewTransition(switchTheme);
+      }
     });
   });
 

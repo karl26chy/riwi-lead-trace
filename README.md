@@ -1,104 +1,84 @@
 # Riwi LeadTrace
 
-> MVP de **feedback ascendente** para el **Proyecto Integrador — CodeUp Riwi: Beyond Limits (Ruta Basica)**. Aplicacion web full-stack: los Coders evaluan a Team Leaders y Tutores (con opcion anonima). Calcula un **Indice de Calidad Percibida (ICP)** y **resumenes con IA (Claude)** para el Admin (Jefe de TL/tutores).
+> Feedback ascendente para el Proyecto Integrador de Riwi: los Coders evalúan a sus Team Leaders y Tutores (con opción anónima), y el Admin consulta resultados agregados y resúmenes generados con IA.
 
-## Que es?
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=fff)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=fff)
+![MySQL](https://img.shields.io/badge/MySQL-3FN-4479A1?logo=mysql&logoColor=fff)
+![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES6+-f7df1e?logo=javascript&logoColor=000)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)
+![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=fff)
+![pytest](https://img.shields.io/badge/Tested_with-pytest-0A9EDC?logo=pytest&logoColor=fff)
 
-Hoy los Team Leaders evaluan a los Coders, pero **no existe un mecanismo formal para que los Coders evaluen a sus lideres y tutores**. Riwi LeadTrace cierra ese ciclo: habilita feedback ascendente (con opcion anonima), identifica fortalezas y debilidades del acompanamiento, y entrega metricas accionables a los responsables academicos.
+---
 
-No es un CRUD basico: incorpora **logica de negocio** real (reglas de anonimato, prevencion de evaluaciones duplicadas por periodo, **ICP** —indice ponderado por criterio con confianza, tendencia y estado—, resumenes con IA anonimizados y control de acceso por rol).
+## Por qué no es un CRUD más
 
-## Equipo (5 integrantes)
+- **Anonimato real.** Si una evaluación se marca anónima, `evaluator_id` nunca se persiste — es irreversible, no un simple filtro de UI.
+- **No-duplicado a prueba de manipulación.** Un Coder no puede evaluar dos veces a la misma persona en el mismo periodo; la regla corre en el backend contra el ID real del evaluador, no contra lo que mande el cliente.
+- **ICP (Índice de Calidad Percibida)** calculado on-read por periodo, con un mínimo de evaluaciones antes de publicarse y estado por umbral fijo (`Sólido` / `Estable` / `En riesgo`).
+- **RBAC por endpoint**, no solo en el router del front: cada ruta valida rol y, donde aplica, que el que pregunta sea el dueño del dato (o admin).
+- **Resúmenes con IA (Claude)** que solo reciben agregados anonimizados — nunca identidades — y se cachean para no regenerar en cada consulta.
+- **SQL plano** (`text()` + parámetros) en vez de un ORM declarativo: se prefirió que el código se lea igual que el SQL real, sin una capa de traducción extra que aprender.
 
-Proyecto desarrollado por un equipo Scrum de **5 Coders** de la misma jornada. Roles (de referencia; todos desarrollan y comprenden la solucion completa):
+## Estructura del monorepo
 
-| Integrante | Rol Scrum | Foco tecnico |
-|-----------|-----------|--------------|
-| 1 | Scrum Master / Lider | Coordinacion + Fullstack |
-| 2 | Product Owner | Backlog + Frontend |
-| 3 | Backend Developer | FastAPI + MySQL |
-| 4 | Backend Developer | FastAPI + logica de negocio |
-| 5 | Frontend Developer | SPA Vanilla JS |
-
-> Cada integrante debe evidenciar commits propios, ramas y Pull Requests bajo **GitFlow** (ver [`docs/08-diseno-tecnico.md`](./docs/08-diseno-tecnico.md)).
-
-## Stack tecnico
-
-| Capa | Tecnologia | Justificacion (resumen) |
-|------|------------|--------------------------|
-| Frontend | HTML5 + CSS3 + **JavaScript Vanilla** (SPA) | Requisito del proyecto; sin frameworks |
-| Estilos | CSS3 + Custom Properties (Tailwind/Bootstrap permitidos) | Responsive mobile-first |
-| Backend | **Python + FastAPI** | Python alineado a la Ruta Basica; validacion con Pydantic, docs OpenAPI automaticas, dependencias para auth/RBAC |
-| ORM/DB driver | SQLAlchemy + PyMySQL | Acceso a datos limpio y mantenible |
-| Base de datos | **MySQL** (relacional, **3FN**) | Integridad referencial; consultas agregadas para el dashboard |
-| Auth | JWT (JSON Web Tokens) | Sesion sin estado; RBAC por rol |
-| Tooling front (dev) | Vite | Dev server / bundler (no es framework de UI) |
-
-Justificacion tecnologica completa: [`docs/06-arquitectura.md`](./docs/06-arquitectura.md).
-
-## Documentacion
-
-**Empieza por [`docs/00-documento-tecnico.md`](./docs/00-documento-tecnico.md)** — resume todo el proyecto en un solo lugar. El resto de `/docs` es el detalle de cada tema:
-
-| Documento | Contenido |
-|-----------|-----------|
-| [00 — Documento Tecnico](./docs/00-documento-tecnico.md) | Resumen completo del proyecto (1 solo documento) |
-| [01 — Vision y Producto](./docs/01-vision-y-producto.md) | Vision, Goal, objetivos, metricas |
-| [02 — Product Backlog](./docs/02-product-backlog.md) | Backlog full-stack priorizado con SP |
-| [03 — Historias de Usuario](./docs/03-historias-de-usuario.md) | Historias + criterios de aceptacion |
-| [05 — Sprint Planning](./docs/05-sprint-planning.md) | Epicas + 4 sprints (entrega 17 jul 2026) |
-| [06 — Arquitectura](./docs/06-arquitectura.md) | Arquitectura full-stack + justificacion tecnologica |
-| [07 — Base de Datos](./docs/07-base-de-datos.md) | MER, 3FN, modelo relacional y CRUD |
-| [08 — Diseno Tecnico](./docs/08-diseno-tecnico.md) | Convenciones, GitFlow de equipo, repo |
-| [09 — Alcance MVP](./docs/09-mvp-alcance.md) | Dentro/fuera del MVP + requisitos no funcionales |
-| [11 — Entregables y Evaluacion](./docs/11-entregables-y-evaluacion.md) | Entregables del proyecto integrador |
-
-Script SQL inicial: [`/database/schema.sql`](./database/schema.sql).
-
-## Estructura del repositorio (monorepo)
-
-```
+```text
 riwi-lead-trace/
-├── frontend/      # SPA: HTML5 + CSS3 + JS Vanilla (Vite dev server)
-├── backend/       # API REST: Python + FastAPI + SQLAlchemy
-├── database/      # schema.sql + seed (MySQL, 3FN)
-├── docs/          # documentacion Scrum + tecnica (01..12)
-├── mockups/       # enlaces/exports de Figma (o ./docs)
-└── README.md
+├── frontend/      # SPA Vanilla JS (ES Modules) + Vite
+├── backend/       # API REST: FastAPI + SQLAlchemy (SQL plano) + MySQL
+├── database/      # schema.sql (3FN) + datos semilla
+└── docs/          # documentación Scrum y técnica
 ```
+
+Cada capa tiene su propio README con detalle: [`backend/README.md`](./backend/README.md) · `frontend/README.md`.
 
 ## Puesta en marcha
 
-### 1) Base de datos (MySQL)
 ```bash
+# Base de datos
 mysql -u root -p < database/schema.sql
-```
 
-### 2) Backend (FastAPI)
-```bash
+# Backend
 cd backend
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env                                # configurar DB_URL y JWT_SECRET
-uvicorn app.main:app --reload                       # http://localhost:8000  (docs: /docs)
-```
+cp .env.example .env
+uvicorn app.main:app --reload                      # http://localhost:8000/docs
 
-### 3) Frontend (SPA)
-```bash
+# Frontend
 cd frontend
 npm install
 npm run dev                                         # http://localhost:5173
 ```
 
-> Los comandos asumen la estructura objetivo descrita en [`docs/06-arquitectura.md`](./docs/06-arquitectura.md). El codigo aun no esta implementado: el repo esta en fase de planeacion.
+## Stack técnico
 
-## Despliegue previsto
+| Capa | Tecnología |
+|---|---|
+| Frontend | HTML5 + CSS3 + JavaScript Vanilla (SPA, sin frameworks) + Vite |
+| Backend | Python + FastAPI, SQLAlchemy (`text()`), Pydantic |
+| Base de datos | MySQL, normalizada a 3FN |
+| Auth | JWT + bcrypt, RBAC por endpoint |
+| IA | Claude API (`anthropic`), resúmenes cacheados |
 
-- **Frontend:** GitHub Pages o Vercel.
-- **Backend + DB:** plataforma en la nube (Render/Railway) o ejecucion local documentada.
+## Testing
 
-Ver [`docs/11-entregables-y-evaluacion.md`](./docs/11-entregables-y-evaluacion.md).
+```bash
+cd backend && pytest      # integración: auth, RBAC, evaluaciones, métricas
+cd frontend && npm test   # unitarios: validators, utilidades
+```
 
-## Roles del sistema (usuarios)
+## Documentación
 
-`Coder` · `Tutor` · `Team Leader` · `Admin (Jefe de TL / tutores)`
+Punto de entrada único: [`docs/00-documento-tecnico.md`](./docs/00-documento-tecnico.md). El resto de `/docs` desglosa visión, backlog, arquitectura, base de datos y convenciones de equipo.
+
+## Equipo
+
+[@manulzweb](https://github.com/manulzweb) · [@YamitGC](https://github.com/YamitGC) · [@karl26chy](https://github.com/karl26chy) · [@smendozab097](https://github.com/smendozab097) · [@SaebGC](https://github.com/SaebGC)
+
+GitFlow + Conventional Commits — cada historia se trabaja en `feature/<ID>-<slug>` desde `develop`.
+
+---
+
+Parte de la documentación y del código de este repo se construyó con asistencia de IA. Todo se revisó y se entiende antes de integrarlo — la rúbrica exige que cada integrante pueda sustentar su parte.

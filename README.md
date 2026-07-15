@@ -7,7 +7,6 @@
 ![MySQL](https://img.shields.io/badge/MySQL-3FN-4479A1?logo=mysql&logoColor=fff)
 ![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES6+-f7df1e?logo=javascript&logoColor=000)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)
-![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=fff)
 ![pytest](https://img.shields.io/badge/Tested_with-pytest-0A9EDC?logo=pytest&logoColor=fff)
 
 ---
@@ -15,9 +14,9 @@
 ## Por qué no es un CRUD más
 
 - **Anonimato real.** Si una evaluación se marca anónima, `evaluator_id` nunca se persiste — es irreversible, no un simple filtro de UI.
-- **No-duplicado a prueba de manipulación.** Un Coder no puede evaluar dos veces a la misma persona en el mismo periodo; la regla corre en el backend contra el ID real del evaluador, no contra lo que mande el cliente.
+- **No-duplicado.** Un Coder no puede evaluar dos veces a la misma persona en el mismo periodo — la regla corre en el backend contra el `evaluator_id` que manda el cliente en cada evaluación.
 - **ICP (Índice de Calidad Percibida)** calculado on-read por periodo, con un mínimo de evaluaciones antes de publicarse y estado por umbral fijo (`Sólido` / `Estable` / `En riesgo`).
-- **RBAC por endpoint**, no solo en el router del front: cada ruta valida rol y, donde aplica, que el que pregunta sea el dueño del dato (o admin).
+- **Login verificado en servidor** (bcrypt) — el front nunca compara contraseñas; recibe al usuario ya validado y decide qué mostrar según su rol (sin JWT, por simplicidad).
 - **Resúmenes con IA (Claude)** que solo reciben agregados anonimizados — nunca identidades — y se cachean para no regenerar en cada consulta.
 - **SQL plano** (`text()` + parámetros) en vez de un ORM declarativo: se prefirió que el código se lea igual que el SQL real, sin una capa de traducción extra que aprender.
 
@@ -60,7 +59,7 @@ npm run dev                                         # http://localhost:5173
 | Frontend | HTML5 + CSS3 + JavaScript Vanilla (SPA, sin frameworks) + Vite |
 | Backend | Python + FastAPI, SQLAlchemy (`text()`), Pydantic |
 | Base de datos | MySQL, normalizada a 3FN |
-| Auth | JWT + bcrypt, RBAC por endpoint |
+| Auth | bcrypt (login) + sesión en `localStorage`, rol validado en el front |
 | IA | Claude API (`anthropic`), resúmenes cacheados |
 
 ## Testing

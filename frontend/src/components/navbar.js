@@ -4,7 +4,7 @@ import { escapeHtml } from "../utils/validators"
 import { renderRoute } from "../router/router";
 import { themeService } from "../services/theme.service";
 import { dropdownComponent, setupDropdown } from "./dropdown";
-import { sidebarComponent } from "./sidebar";
+import { sidebarComponent, setupSidebar } from "./sidebar";
 
 export const navBarComponent = () => {
   const user = authService.getSession()
@@ -128,4 +128,6 @@ export const setupNavBar = () => {
   if (openSidebarBtn) openSidebarBtn.addEventListener("click", () => toggleSidebar());
   if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", () => toggleSidebar(true));
   if (overlay) overlay.addEventListener("click", () => toggleSidebar(true));
+
+  setupSidebar();
 };

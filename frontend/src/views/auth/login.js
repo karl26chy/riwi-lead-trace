@@ -104,12 +104,27 @@ const handleLoginSubmit = (elements) => async (event) => {
     //   return showFieldError(elements.emailInput, "Credenciales incorrectas", elements.emailError);
     // }
 
-    // Mock user for testing
+    // Mock user for testing: asignar rol basado en el email
+    let userRole = "admin";
+    let userName = "Admin User";
+    
+    const emailLower = email.toLowerCase();
+    if (emailLower.includes("coder")) {
+      userRole = "coder";
+      userName = "Coder User";
+    } else if (emailLower.includes("team")) {
+      userRole = "team_leader";
+      userName = "Team Leader";
+    } else if (emailLower.includes("tutor")) {
+      userRole = "tutor";
+      userName = "Tutor User";
+    }
+
     const user = {
       id: "1",
-      name: "Usuario de Prueba",
-      email: email,
-      roles: ["admin"]
+      name: userName,
+      email: emailLower,
+      roles: [userRole]
     };
 
     authService.setSession(user);

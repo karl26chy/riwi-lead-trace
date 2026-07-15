@@ -7,6 +7,7 @@ import { renderMyEvaluations, setupMyEvaluations }   from "../views/coder/my-eva
 import { renderMyResults, setupMyResults }           from "../views/team-leader/my-results.view.js";
 import { renderMetrics, setupMetrics }               from "../views/admin/metrics.view.js";
 import { renderAiSummary, setupAiSummary }           from "../views/admin/ai-summary.view.js";
+import { renderAdminEvaluations, setupAdminEvaluations } from "../views/admin/evaluations.view.js";
 
 export const ROUTES = {
   "/login": {
@@ -58,6 +59,13 @@ export const ROUTES = {
   },
 
   // ── Admin ──────────────────────────────────────────────────────────────────
+  "/admin/evaluations": {
+    title: "Gestión de Evaluaciones | LeadTrace",
+    renderView: renderAdminEvaluations,
+    initSetup: setupAdminEvaluations,
+    requireAuth: true,
+    allowedRoles: ["admin"],
+  },
   "/admin/metrics": {
     title: "Métricas ICA | LeadTrace",
     renderView: renderMetrics,

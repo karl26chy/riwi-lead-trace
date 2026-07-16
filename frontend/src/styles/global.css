@@ -15,7 +15,7 @@
   --color-danger-text: var(--danger-text);
   --color-danger-border: var(--danger-border);
 
-    /* Tipografías */
+  /* Tipografías */
   --font-body: 'Open Sans', sans-serif;
   --font-heading: 'Rubik', serif;
 }
